@@ -3,9 +3,11 @@ import numpy as np
 from variable import Variable
 
 class Function :
-    def __call__(self, inputs) :
+    def __call__(self, *inputs) :
         input_datas = [input.data for input in inputs]
-        output_datas = self.forward(input_datas)
+        output_datas = self.forward(*input_datas)
+        if not isinstance(output_datas, tuple) :
+            output_datas = (output_datas, )
         outputs = []
         for output_data in output_datas :
             output = Variable(self.to_array(output_data))
@@ -29,9 +31,9 @@ class Function :
         raise NotImplementedError()
 
 class Add(Function) :
-    def forward(self, inputs) :
-        x0, x1 = inputs[0], inputs[1]
-        return [(x0 + x1)]
-def add(inputs) :
+    def forward(self, x0, x1) :
+        y = x0 + x1
+        return y
+def add(*inputs) :
     func = Add()
-    return func(inputs)
+    return func(*inputs)
