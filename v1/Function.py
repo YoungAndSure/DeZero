@@ -16,11 +16,11 @@ class Function :
             return np.array(x)
         return x
 
-    
+    # forward和backward是给用户写的接口，用户不需要知道框架对变量进行了Variable封装，
+    # 所以forward和backward里不能有任何关于Variable的代码，谢谢
     # input: array, output: array or scalar
     def forward(self, x) :
         raise NotImplementedError()
-
     # input: array, output: array
     def backward(self, x) :
         raise NotImplementedError()
