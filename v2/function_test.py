@@ -33,4 +33,29 @@ class AddTest(unittest.TestCase) :
     self.assertEqual(x.grad, np.array(6.0))
     self.assertEqual(y.grad, np.array(6.0))
 
+  def test_same_input(self) :
+    x = Variable(np.array(1.0))
+    outputs = add(x, x)
+    outputs[0].backward()
+    expected = np.array(2.0)
+    self.assertEqual(x.grad, expected)
+    y = Variable(np.array(1.0))
+    outputs = add(add(y, y), y)
+    outputs[0].backward()
+    expected = np.array(3.0)
+    self.assertEqual(y.grad, expected)
+
+  def test_reuse_variable(self) :
+    x = Variable(np.array(1.0))
+    outputs = add(x, x)
+    outputs[0].backward()
+    expected = np.array(2.0)
+    self.assertEqual(x.grad, expected)
+
+    x.cleargrad()
+    outputs = square(x)
+    outputs[0].backward()
+    expected = np.array(2.0)
+    self.assertEqual(x.grad, expected)
+ 
 unittest.main()

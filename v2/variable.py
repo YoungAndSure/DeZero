@@ -15,11 +15,17 @@ class Variable :
         funcs = [self.creator]
         while funcs :
             func = funcs.pop()
-            output_datas = [output.grad for output in func.outputs]
-            input_datas = func.backward(*output_datas)
-            if not isinstance(input_datas, tuple) :
-                input_datas = (input_datas, )
-            for input, input_data in zip(func.inputs, input_datas) :
-                input.grad = input_data
+            output_grads = [output.grad for output in func.outputs]
+            input_grads = func.backward(*output_grads)
+            if not isinstance(input_grads, tuple) :
+                input_grads = (input_grads, )
+            for input, input_grad in zip(func.inputs, input_grads) :
+                if (input.grad == None) :
+                    input.grad = input_grad
+                else :
+                    input.grad = input.grad + input_grad
                 if (input.creator != None) :
                     funcs.insert(0, input.creator)
+    
+    def cleargrad(self) :
+        self.grad = None

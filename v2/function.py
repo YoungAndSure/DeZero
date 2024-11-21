@@ -4,6 +4,8 @@ from variable import Variable
 
 class Function :
     def __call__(self, *inputs) :
+        # 上一个func输出是多个list，到这里就输入了多个list
+        # 没明白官方怎么解决这个问题的，自己加了个展开操作代替之
         flat_inputs = self.flat_input(inputs)
         input_datas = [input.data for input in flat_inputs]
 
