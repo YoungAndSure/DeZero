@@ -25,7 +25,7 @@ class Variable :
 
         while funcs :
             func = funcs.pop()
-            output_grads = [output.grad for output in func.outputs]
+            output_grads = [output().grad for output in func.outputs]
             input_grads = func.backward(*output_grads)
             if not isinstance(input_grads, tuple) :
                 input_grads = (input_grads, )

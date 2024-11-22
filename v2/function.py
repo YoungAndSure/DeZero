@@ -1,5 +1,6 @@
 
 import numpy as np
+import weakref
 from variable import Variable
 
 class Function :
@@ -20,7 +21,9 @@ class Function :
             output.generation = self.generation + 1
             outputs.append(output)
 
-        self.outputs = outputs
+        # 真他妈巧妙，这里function持有的是虚的，向后传递的是实的，不用改动任何接口
+        # 只有在用function里这个output的时候才需要加()
+        self.outputs = [weakref.ref(output) for output in outputs]
         self.inputs = flat_inputs
         return outputs
 
