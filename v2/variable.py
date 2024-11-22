@@ -8,11 +8,21 @@ class Variable :
             self.data = data
         self.grad = None
         self.creator = None
+        self.generation = 0
 
     def backward(self) :
         if self.grad == None :
             self.grad = numpy.ones_like(self.data)
-        funcs = [self.creator]
+
+        funcs = []
+        seen_set = set()
+        def add_func(f) :
+            if f not in seen_set :
+                funcs.append(f)
+                seen_set.add(f)
+            funcs.sort(key = lambda x : x.generation)
+        add_func(self.creator)
+
         while funcs :
             func = funcs.pop()
             output_grads = [output.grad for output in func.outputs]
@@ -25,7 +35,7 @@ class Variable :
                 else :
                     input.grad = input.grad + input_grad
                 if (input.creator != None) :
-                    funcs.insert(0, input.creator)
+                    add_func(input.creator)
     
     def cleargrad(self) :
         self.grad = None

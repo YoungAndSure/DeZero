@@ -8,6 +8,7 @@ class Function :
         # 没明白官方怎么解决这个问题的，自己加了个展开操作代替之
         flat_inputs = self.flat_input(inputs)
         input_datas = [input.data for input in flat_inputs]
+        self.generation = max([input.generation for input in flat_inputs])
 
         output_datas = self.forward(*input_datas)
         if not isinstance(output_datas, tuple) :
@@ -16,6 +17,7 @@ class Function :
         for output_data in output_datas :
             output = Variable(self.to_array(output_data))
             output.creator = self
+            output.generation = self.generation + 1
             outputs.append(output)
 
         self.outputs = outputs

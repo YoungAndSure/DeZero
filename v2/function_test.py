@@ -57,5 +57,13 @@ class AddTest(unittest.TestCase) :
     outputs[0].backward()
     expected = np.array(2.0)
     self.assertEqual(x.grad, expected)
+  
+  def test_generation(self) :
+    x = Variable(np.array(2.0))
+    y = square(x)
+    z = add(square(y), square(y))
+    self.assertEqual(z[0].data, np.array(32))
+    z[0].backward()
+    self.assertEqual(x.grad, 64)
  
 unittest.main()
