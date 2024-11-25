@@ -50,8 +50,8 @@ class Variable :
 
         while funcs :
             func = funcs.pop()
-            output_grads = [output().grad for output in func.outputs]
-            input_grads = func.backward(*output_grads)
+            output_grads = func.outputs().grad
+            input_grads = func.backward(output_grads)
             if not isinstance(input_grads, tuple) :
                 input_grads = (input_grads, )
             for input, input_grad in zip(func.inputs, input_grads) :
@@ -62,8 +62,7 @@ class Variable :
                 if (input.creator != None) :
                     add_func(input.creator)
             if retain_grad == False :
-                for output in func.outputs :
-                    output().grad = None
+                func.outputs().grad = None
     
     def cleargrad(self) :
         self.grad = None

@@ -6,28 +6,19 @@ from config import Config
 
 class Function :
     def __call__(self, *inputs) :
-        # 上一个func输出是多个list，到这里就输入了多个list
-        # 没明白官方怎么解决这个问题的，自己加了个展开操作代替之
-        flat_inputs = self.flat_input(inputs)
-        input_datas = [input.data for input in flat_inputs]
-        self.generation = max([input.generation for input in flat_inputs])
+        input_datas = [input.data for input in inputs]
+        self.generation = max([input.generation for input in inputs])
 
         output_datas = self.forward(*input_datas)
-        if not isinstance(output_datas, tuple) :
-            output_datas = (output_datas, )
-        outputs = []
-        for output_data in output_datas :
-            output = Variable(self.to_array(output_data))
-            if Config.enable_backward == True :
-                output.creator = self
-                output.generation = self.generation + 1
-            outputs.append(output)
-
+        outputs = Variable(self.to_array(output_datas))
         if Config.enable_backward == True :
+            outputs.creator = self
+            outputs.generation = self.generation + 1
+
             # 真他妈巧妙，这里function持有的是虚的，向后传递的是实的，不用改动任何接口
             # 只有在用function里这个output的时候才需要加()
-            self.outputs = [weakref.ref(output) for output in outputs]
-            self.inputs = flat_inputs
+            self.outputs = weakref.ref(outputs)
+            self.inputs = inputs
         return outputs
 
     def to_array(self, x) :
