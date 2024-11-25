@@ -89,5 +89,15 @@ class AddTest(unittest.TestCase) :
       x = Variable(np.ones((100, 100, 100)))
       y = square(square(square(x)))
       y[0].backward()
+  
+  def test_variable_property(self) :
+    x = Variable(np.array([1.0,2.0,3.0]), "x_input")
+    print()
+    print("x.shape:", x.shape)
+    print("x.ndim:", x.ndim)
+    print("x.dtype:", x.dtype)
+    print("len x:", len(x))
+    print("print:", x)
+    print("name:", x.name)
  
 unittest.main()
