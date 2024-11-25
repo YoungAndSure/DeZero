@@ -4,13 +4,24 @@ import weakref
 from variable import Variable
 from config import Config
 
+def as_variable(input) :
+    if not isinstance(input, Variable) :
+        return Variable(input)
+    return input
+
+def as_array(x) :
+    if (np.isscalar(x)) :
+        return np.array(x)
+    return x
+
 class Function :
     def __call__(self, *inputs) :
+        inputs = [as_variable(as_array(input)) for input in inputs]
         input_datas = [input.data for input in inputs]
         self.generation = max([input.generation for input in inputs])
 
         output_datas = self.forward(*input_datas)
-        outputs = Variable(self.to_array(output_datas))
+        outputs = Variable(as_array(output_datas))
         if Config.enable_backward == True :
             outputs.creator = self
             outputs.generation = self.generation + 1
@@ -21,11 +32,6 @@ class Function :
             self.inputs = inputs
         return outputs
 
-    def to_array(self, x) :
-        if (np.isscalar(x)) :
-            return np.array(x)
-        return x
-    
     def flat_input(self, inputs) :
         result = []
         for input in inputs :
@@ -86,3 +92,6 @@ def exp(*x) :
 
 Variable.__add__ = add
 Variable.__mul__ = mul
+Variable.__radd__ = add
+Variable.__rmul__ = mul
+Variable.__array_priority__ = 200

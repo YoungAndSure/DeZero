@@ -115,5 +115,20 @@ class AddTest(unittest.TestCase) :
     x2 = Variable(np.array(4.0))
     y = (x0 + x1) * x2
     self.assertEqual(y.data, np.array(20.0))
+  
+  def test_input_array_scalar(self) :
+    x = Variable(np.array(2.0))
+    y = x + np.array(3.0)
+    z = y * 4.0
+    self.assertEqual(z.data, 20.0)
+    y = np.array(3.0) + x
+    z = 4.0 * y
+    self.assertEqual(z.data, 20.0)
+
+    # test __array_priority__
+    x0 = Variable(np.array([2.0]))
+    y = np.array([3.0]) + x0
+    z = 4.0 * y
+    self.assertEqual(z.data, [20.0])
  
 unittest.main()
