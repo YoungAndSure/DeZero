@@ -65,6 +65,16 @@ def add(*inputs) :
     func = Add()
     return func(*inputs)
 
+class Mul(Function) :
+    def forward(self, x0, x1) :
+        y = x0 * x1
+        return y
+    def backward(self, gy) :
+        return (gy * self.inputs[1].data, gy * self.inputs[0].data)
+def mul(*inputs) :
+    func = Mul()
+    return func(*inputs)
+
 class Square(Function) :
     def forward(self, x) :
         return x ** 2
@@ -82,3 +92,6 @@ class Exp(Function) :
 def exp(*x) :
     f = Exp()
     return f(*x)
+
+Variable.__add__ = add
+Variable.__mul__ = mul

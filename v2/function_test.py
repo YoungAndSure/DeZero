@@ -99,5 +99,21 @@ class AddTest(unittest.TestCase) :
     print("len x:", len(x))
     print("print:", x)
     print("name:", x.name)
+  
+  def test_mul(self) :
+    x0 = Variable(np.array(2.0))
+    x1 = Variable(np.array(3.0))
+    y = mul(x0, x1)
+    self.assertEqual(y[0].data, np.array(6.0))
+    y[0].backward()
+    self.assertEqual(x0.grad, np.array(3.0))
+    self.assertEqual(x1.grad, np.array(2.0))
+
+  def test_function_reload(self) :
+    x0 = Variable(np.array(2.0))
+    x1 = Variable(np.array(3.0))
+    x2 = Variable(np.array(4.0))
+    y = (x0 + x1) * x2
+    self.assertEqual(y[0].data, np.array(20.0))
  
 unittest.main()
