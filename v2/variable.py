@@ -1,4 +1,5 @@
 import numpy
+from config import Config
 
 class Variable :
     def __init__(self, data) :
@@ -10,7 +11,11 @@ class Variable :
         self.creator = None
         self.generation = 0
 
-    def backward(self) :
+    def backward(self, retain_grad=False) :
+        if Config.enable_backward == False :
+            print("backward disabled")
+            return
+
         if self.grad == None :
             self.grad = numpy.ones_like(self.data)
 
@@ -36,6 +41,9 @@ class Variable :
                     input.grad = input.grad + input_grad
                 if (input.creator != None) :
                     add_func(input.creator)
+            if retain_grad == False :
+                for output in func.outputs :
+                    output().grad = None
     
     def cleargrad(self) :
         self.grad = None

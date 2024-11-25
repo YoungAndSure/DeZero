@@ -2,6 +2,7 @@
 import numpy as np
 import weakref
 from variable import Variable
+from config import Config
 
 class Function :
     def __call__(self, *inputs) :
@@ -17,14 +18,16 @@ class Function :
         outputs = []
         for output_data in output_datas :
             output = Variable(self.to_array(output_data))
-            output.creator = self
-            output.generation = self.generation + 1
+            if Config.enable_backward == True :
+                output.creator = self
+                output.generation = self.generation + 1
             outputs.append(output)
 
-        # 真他妈巧妙，这里function持有的是虚的，向后传递的是实的，不用改动任何接口
-        # 只有在用function里这个output的时候才需要加()
-        self.outputs = [weakref.ref(output) for output in outputs]
-        self.inputs = flat_inputs
+        if Config.enable_backward == True :
+            # 真他妈巧妙，这里function持有的是虚的，向后传递的是实的，不用改动任何接口
+            # 只有在用function里这个output的时候才需要加()
+            self.outputs = [weakref.ref(output) for output in outputs]
+            self.inputs = flat_inputs
         return outputs
 
     def to_array(self, x) :

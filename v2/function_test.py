@@ -5,6 +5,7 @@ import numpy as np
 
 from variable import Variable
 from function import *
+from config import *
 
 class AddTest(unittest.TestCase) :
   def test_forward(self) :
@@ -65,5 +66,28 @@ class AddTest(unittest.TestCase) :
     self.assertEqual(z[0].data, np.array(32))
     z[0].backward()
     self.assertEqual(x.grad, 64)
+  
+  def test_retain_grad(self) :
+    x0 = Variable(np.array(1.0))
+    x1 = Variable(np.array(1.0))
+    t = Variable(np.array(1.0))
+    y = add(x0, x1)
+    z = add(y, t)
+    self.assertEqual(z[0].data, 3)
+    z[0].backward()
+    self.assertEqual(x0.grad, 1)
+    self.assertEqual(x1.grad, 1)
+    self.assertEqual(y[0].grad, None)
+    self.assertEqual(z[0].grad, None)
+  
+  def test_config_enable_backward(self) :
+    x = Variable(np.ones((100, 100, 100)))
+    y = square(square(square(x)))
+    y[0].backward()
+
+    with predict() :
+      x = Variable(np.ones((100, 100, 100)))
+      y = square(square(square(x)))
+      y[0].backward()
  
 unittest.main()
