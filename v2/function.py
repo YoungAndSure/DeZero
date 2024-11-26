@@ -62,6 +62,19 @@ def add(*inputs) :
     func = Add()
     return func(*inputs)
 
+class Sub(Function) :
+    def forward(self, x0, x1) :
+        y = x0 - x1
+        return y
+    def backward(self, gy) :
+        return (gy, -1 * gy)
+def sub(*inputs) :
+    func = Sub()
+    return func(*inputs)
+def rsub(*inputs) :
+    func = Sub()
+    return func(inputs[1], inputs[0])
+
 class Mul(Function) :
     def forward(self, x0, x1) :
         y = x0 * x1
@@ -90,8 +103,52 @@ def exp(*x) :
     f = Exp()
     return f(*x)
 
+class Neg(Function) :
+    def forward(self, x) :
+        return -1 * x
+    def backward(self, gy) :
+        return -1 * gy
+def neg(*inputs) :
+    func = Neg()
+    return func(*inputs)
+
+class Div(Function) :
+    def forward(self, x0, x1) :
+        return x0 / x1
+    def backward(self, gy) :
+        return (gy / x1, -1 * (x0 * gy) / (x1 * x1))
+def div(*inputs) :
+    func = Div()
+    return func(*inputs)
+def rdiv(*inputs) :
+    func = Div()
+    return func(inputs[1], inputs[0])
+
+class Pow(Function) :
+    def __init__(self, c) :
+        self.c = c
+    def forward(self, x) :
+        return np.power(x, self.c)
+    def backward(self, x) :
+        return self.c * np.power(x, self.c - 1)
+def pow(x, c) :
+    func = Pow(c)
+    return func(x)
+
 Variable.__add__ = add
-Variable.__mul__ = mul
 Variable.__radd__ = add
+
+Variable.__mul__ = mul
 Variable.__rmul__ = mul
+
+Variable.__sub__ = sub
+Variable.__rsub__ = rsub
+
+Variable.__neg__ = neg
+
+Variable.__truediv__ = div
+Variable.__rtruediv__ = rdiv
+
+Variable.__pow__ = pow
+
 Variable.__array_priority__ = 200

@@ -130,5 +130,36 @@ class AddTest(unittest.TestCase) :
     y = np.array([3.0]) + x0
     z = 4.0 * y
     self.assertEqual(z.data, [20.0])
- 
+  
+  def test_sub(self) :
+    x0 = Variable(np.array(2.0))
+    x1 = Variable(np.array(1.0))
+    y = x0 - x1
+    self.assertEqual(y.data, 1.0)
+    y = np.array(3.0) - x1
+    self.assertEqual(y.data, 2.0)
+    y = 4.0 - x1
+    self.assertEqual(y.data, 3.0)
+
+  def test_neg(self) :
+    x0 = Variable(np.array(2.0))
+    y = -x0
+    self.assertEqual(y.data, -2.0)
+
+  def test_div(self) :
+    x0 = Variable(np.array(2.0))
+    x1 = Variable(np.array(1.0))
+    y = x0 / x1
+    self.assertEqual(y.data, 2.0)
+    y = np.array(3.0) / x1
+    self.assertEqual(y.data, 3.0)
+    y = 4.0 / x1
+    self.assertEqual(y.data, 4.0)
+
+  def test_pow(self) :
+    x0 = Variable(np.array(2.0))
+    y = x0 ** 3.0
+    self.assertEqual(y.data, 8.0)
+
+
 unittest.main()
