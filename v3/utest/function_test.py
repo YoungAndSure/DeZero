@@ -7,9 +7,10 @@ if '__file__' in globals() :
 import unittest
 import numpy as np
 
-from dezero.variable import Variable
+from dezero.variable import *
 from dezero.function import *
 from dezero.config import *
+from dezero.user_defined_func import *
 
 class AddTest(unittest.TestCase) :
   def test_forward(self) :
@@ -164,6 +165,25 @@ class AddTest(unittest.TestCase) :
     x0 = Variable(np.array(2.0))
     y = x0 ** 3.0
     self.assertEqual(y.data, 8.0)
+  
+  def test_sphere(self) :
+    x = Variable(np.array(1.0))
+    y = Variable(np.array(1.0))
+    z = sphere(x, y)
+    self.assertEqual(z.data, 2.0)
+    z.backward()
+    self.assertEqual(x.grad, 2.0)
+    self.assertEqual(y.grad, 2.0)
+  
+  def test_matyas(self) :
+    x = Variable(np.array(1.0))
+    y = Variable(np.array(1.0))
+    z = matyas(x, y)
+    self.assertTrue(np.allclose(z.data, 0.04))
+    z.backward()
+    self.assertTrue(x.grad, 0.040000000000000036)
+    self.assertEqual(y.grad, 0.040000000000000036)
+
 
 
 unittest.main()
