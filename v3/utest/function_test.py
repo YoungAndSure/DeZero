@@ -11,6 +11,28 @@ from dezero.variable import *
 from dezero.function import *
 from dezero.config import *
 from dezero.user_defined_func import *
+from dezero.util import _dot_var, _dot_func, get_dot_graph, plot_dot_graph
+
+class UtilTest(unittest.TestCase) :
+  def test_dot_var(self) :
+    x0 = Variable(np.array(1.0))
+    x1 = Variable(np.array(2.0))
+    y = x0 + x1
+    print(_dot_var(y))
+    print(_dot_func(y.creator))
+  
+  def test_get_dot_graph(self) :
+    x0 = Variable(np.array(1.0), "x0")
+    x1 = Variable(np.array(2.0), "x1")
+    y = x0 + x1
+    y.name = "y"
+    plot_dot_graph(y, verbose=True, to_file="add.png")
+  
+  def test_get_dot_graph2(self) :
+    x = Variable(np.array(1.0))
+    y = Variable(np.array(1.0))
+    z = goldstein(x, y)
+    plot_dot_graph(z, verbose=True, to_file="goldstein.png")
 
 class AddTest(unittest.TestCase) :
   def test_forward(self) :
@@ -183,7 +205,14 @@ class AddTest(unittest.TestCase) :
     z.backward()
     self.assertTrue(x.grad, 0.040000000000000036)
     self.assertEqual(y.grad, 0.040000000000000036)
-
-
+  
+  def test_goldstein(self) :
+    x = Variable(np.array(1.0))
+    y = Variable(np.array(1.0))
+    z = goldstein(x, y)
+    self.assertTrue(np.allclose(z.data, 1876.0))
+    z.backward()
+    self.assertTrue(x.grad, 2108.0)
+    self.assertEqual(y.grad, -5172.0)
 
 unittest.main()
