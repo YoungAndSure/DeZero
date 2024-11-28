@@ -135,6 +135,15 @@ def pow(x, c) :
     func = Pow(c)
     return func(x)
 
+class Sin(Function) :
+  def forward(self, x) :
+    return np.sin(x)
+  def backward(self, gy) :
+    return np.cos(self.inputs[0].data) * gy
+def sin(x) :
+  func = Sin()
+  return func(x)
+
 def setup_variable() :
   Variable.__add__ = add
   Variable.__radd__ = add

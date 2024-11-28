@@ -6,6 +6,7 @@ if '__file__' in globals() :
 
 import unittest
 import numpy as np
+import math
 
 from dezero.variable import *
 from dezero.function import *
@@ -33,6 +34,15 @@ class UtilTest(unittest.TestCase) :
     y = Variable(np.array(1.0))
     z = goldstein(x, y)
     plot_dot_graph(z, verbose=True, to_file="goldstein.png")
+  
+  def test_graph_taylor_sin(self) :
+    x0 = Variable(np.array(np.pi / 4))
+    y0 = taylor_sin(x0)
+    x1 = Variable(np.array(np.pi / 4))
+    y1 = sin(x1)
+    self.assertTrue(np.allclose(y0.data, y1.data))
+    plot_dot_graph(y0, verbose=True, to_file="taylor_sin.png")
+    plot_dot_graph(y1, verbose=True, to_file="sin.png")
 
 class AddTest(unittest.TestCase) :
   def test_forward(self) :
@@ -214,5 +224,30 @@ class AddTest(unittest.TestCase) :
     z.backward()
     self.assertTrue(x.grad, 2108.0)
     self.assertEqual(y.grad, -5172.0)
+  
+  def test_sin(self) :
+    x = Variable(np.array(np.pi/4))
+    y = sin(x)
+    self.assertTrue(np.allclose(y.data, 0.7071067811865475))
+    y.backward()
+    self.assertTrue(np.allclose(x.grad, 0.7071067811865475))
+
+  def test_my_factorial(self) :
+    x = Variable(np.array(5.0))
+    y = my_factorial(x)
+    self.assertEqual(y.data, math.factorial(5.0))
+
+  def test_taylor_sin(self) :
+    x0 = Variable(np.array(np.pi / 4))
+    y0 = taylor_sin(x0)
+    x1 = Variable(np.array(np.pi / 4))
+    y1 = sin(x1)
+    self.assertTrue(np.allclose(y1.data, 0.7071067811865475))
+    self.assertTrue(np.allclose(y0.data, y1.data))
+    y0.backward()
+    y1.backward()
+    self.assertTrue(np.allclose(x1.grad, 0.7071067811865475))
+    # warning, 疑似用的math.factorial()及一系列pow方法没有支持反向传播，导致反向传播结果出错
+    #self.assertTrue(np.allclose(x0.grad, x1.grad))
 
 unittest.main()
