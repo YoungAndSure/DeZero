@@ -63,6 +63,6 @@ class Variable :
                     add_func(input.creator)
             if retain_grad == False :
                 func.outputs().grad = None
-    
+
     def cleargrad(self) :
         self.grad = None

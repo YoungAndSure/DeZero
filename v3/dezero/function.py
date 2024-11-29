@@ -129,8 +129,8 @@ class Pow(Function) :
         self.c = c
     def forward(self, x) :
         return np.power(x, self.c)
-    def backward(self, x) :
-        return self.c * np.power(x, self.c - 1)
+    def backward(self, gy) :
+        return gy * self.c * np.power(self.inputs[0].data, self.c - 1)
 def pow(x, c) :
     func = Pow(c)
     return func(x)

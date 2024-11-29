@@ -223,7 +223,7 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.allclose(z.data, 1876.0))
     z.backward()
     self.assertTrue(x.grad, 2108.0)
-    self.assertEqual(y.grad, -5172.0)
+    self.assertEqual(y.grad, 8064.0)
   
   def test_sin(self) :
     x = Variable(np.array(np.pi/4))
@@ -248,6 +248,17 @@ class AddTest(unittest.TestCase) :
     y1.backward()
     self.assertTrue(np.allclose(x1.grad, 0.7071067811865475))
     # warning, 疑似用的math.factorial()及一系列pow方法没有支持反向传播，导致反向传播结果出错
-    #self.assertTrue(np.allclose(x0.grad, x1.grad))
+    # fix了，是因为pow的反向传播写错了
+    self.assertTrue(np.allclose(x0.grad, x1.grad))
+  
+  def test_rosenbrock(self) :
+    x0 = Variable(np.array(0.0))
+    x1 = Variable(np.array(2.0))
+    y = rosenbrock(x0, x1)
+    self.assertEqual(y.data, 401.0)
+    y.backward(retain_grad=True)
+    plot_dot_graph(y, verbose=True, to_file="rosenbrock.png")
+    self.assertEqual(x0.grad, -2.0)
+    self.assertEqual(x1.grad, 400.0)
 
 unittest.main()
