@@ -162,6 +162,8 @@ class AddTest(unittest.TestCase) :
     self.assertEqual(y.data, 3.0)
     y = 4.0 / x1
     self.assertEqual(y.data, 4.0)
+    y.backward()
+    self.assertEqual(x1.grad, -4.0)
 
   def test_pow(self) :
     x0 = Variable(np.array(2.0))
