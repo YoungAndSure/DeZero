@@ -37,4 +37,11 @@ class AddTest(unittest.TestCase) :
     # 二次反向传播先是传回了y.grad，然后又继续往回传到了x.grad
     self.assertEqual(x.grad.data, 44.0)
 
+  def test_cos(self) :
+    x = Variable(np.array(np.pi / 4))
+    y = cos(x)
+    self.assertTrue(np.allclose(y.data, 0.70710678))
+    y.backward()
+    self.assertTrue(np.allclose(x.grad.data, -0.70710678))
+
 unittest.main()

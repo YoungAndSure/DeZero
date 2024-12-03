@@ -140,10 +140,20 @@ class Sin(Function) :
   def forward(self, x) :
     return np.sin(x)
   def backward(self, gy) :
-    return np.cos(self.inputs[0]) * gy
+    return cos(self.inputs[0]) * gy
 def sin(x) :
   func = Sin()
   return func(x)
+
+class Cos(Function) :
+  def forward(self, x) :
+    return np.cos(x)
+  def backward(self, gy) :
+    return -sin(self.inputs[0]) * gy
+def cos(x) :
+  func = Cos()
+  return func(x)
+
 
 def setup_variable() :
   Variable.__add__ = add
