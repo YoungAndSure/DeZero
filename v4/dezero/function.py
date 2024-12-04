@@ -154,6 +154,15 @@ def cos(x) :
   func = Cos()
   return func(x)
 
+class Tanh(Function) :
+    def forward(self, x) :
+        return np.tanh(x)
+    def backward(self, gy) :
+        return gy * (1 - self.outputs() ** 2)
+def tanh(x) :
+    func = Tanh()
+    return func(x)
+
 
 def setup_variable() :
   Variable.__add__ = add

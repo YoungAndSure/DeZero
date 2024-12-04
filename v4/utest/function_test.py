@@ -43,5 +43,12 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.allclose(y.data, 0.70710678))
     y.backward()
     self.assertTrue(np.allclose(x.grad.data, -0.70710678))
+  
+  def test_tan(self) :
+    x = Variable(np.array(np.pi))
+    y = tanh(x)
+    print(y.data)
+    y.backward()
+    print(x.grad.data)
 
 unittest.main()
