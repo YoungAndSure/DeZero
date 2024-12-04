@@ -47,8 +47,8 @@ class AddTest(unittest.TestCase) :
   def test_tan(self) :
     x = Variable(np.array(np.pi))
     y = tanh(x)
-    print(y.data)
+    self.assertTrue(np.allclose(y.data, 0.996272))
     y.backward()
-    print(x.grad.data)
+    self.assertTrue(np.allclose(x.grad.data, 0.00744195))
 
 unittest.main()
