@@ -50,5 +50,13 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.allclose(y.data, 0.996272))
     y.backward()
     self.assertTrue(np.allclose(x.grad.data, 0.00744195))
+  
+  def test_tensor_add(self) :
+    x = Variable(np.array([1.0, 2.0, 3.0]))
+    y = Variable(np.array([3.0, 2.0, 1.0]))
+    z = x + y
+    self.assertTrue(np.array_equal(z.data, [4.0, 4.0, 4.0]))
+    z.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [1.0, 1.0, 1.0]))
 
 unittest.main()
