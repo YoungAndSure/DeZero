@@ -173,6 +173,8 @@ class Reshape(Function) :
     def backward(self, gy) :
         return reshape(gy, self.input_shape)
 def reshape(x, shape) :
+    #if (x.shape == shape) :
+    #    return as_variable(x)
     func = Reshape(shape)
     return func(x)
 

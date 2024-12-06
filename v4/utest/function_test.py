@@ -66,5 +66,8 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.array_equal(y.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]))
     y.backward()
     self.assertTrue(np.array_equal(x.grad.data, [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]))
+    z = reshape(t, (2, 3))
+    self.assertTrue(np.array_equal(z.data, t))
+    z.backward()
 
 unittest.main()
