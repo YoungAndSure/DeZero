@@ -70,9 +70,14 @@ class AddTest(unittest.TestCase) :
     z.backward()
   
   def test_variable_reshape(self) :
-    t = np.array([[1.0, 2.0, 3.0],[4.0, 5.0, 6.0]])
-    x = Variable(t)
+    x = Variable(np.array([[1.0, 2.0, 3.0],[4.0, 5.0, 6.0]]))
     y = x.reshape((6, ))
+    self.assertTrue(np.array_equal(y.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]))
+
+    x = Variable(np.array([[1.0, 2.0, 3.0],[4.0, 5.0, 6.0]]))
+    y = x.reshape(6, )
     self.assertTrue(np.array_equal(y.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]))
     y.backward()
     self.assertTrue(np.array_equal(x.grad.data, [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]))

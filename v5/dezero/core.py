@@ -74,6 +74,8 @@ class Variable :
         self.grad = None
 
     def reshape(self, *shape) :
+        # *会把输入变成一个tuple，所以，如果传入(6,)，这里读出来是((6,))
+        # 如果传入2,3，这里读出来反倒是(2,3)，可以直接透传
         if len(shape) == 1 and isinstance(shape[0], (tuple, list)) :
             shape = shape[0]
         return reshape(self, shape)
@@ -247,8 +249,6 @@ class Reshape(Function) :
     def backward(self, gy) :
         return reshape(gy, self.input_shape)
 def reshape(x, shape) :
-    #if (x.shape == shape) :
-    #    return as_variable(x)
     func = Reshape(shape)
     return func(x)
 
