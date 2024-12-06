@@ -69,5 +69,12 @@ class AddTest(unittest.TestCase) :
     z = reshape(t, (2, 3))
     self.assertTrue(np.array_equal(z.data, t))
     z.backward()
+  
+  #def test_variable_reshape(self) :
+  #  t = np.array([[1.0, 2.0, 3.0],[4.0, 5.0, 6.0]])
+  #  x = Variable(t)
+  #  y = x.reshape((6, ))
+  #  self.assertTrue(np.array_equal(y.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]))
+
 
 unittest.main()

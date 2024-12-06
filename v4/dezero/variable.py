@@ -70,3 +70,8 @@ class Variable :
 
     def cleargrad(self) :
         self.grad = None
+
+    #def reshape(self, *shape) :
+    #    if len(shape) == 1 and isinstance(shape[0], (tuple, list)) :
+    #        shape = shape[0]
+    #    return dezero.function.reshape(self, shape)
