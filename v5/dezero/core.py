@@ -79,6 +79,12 @@ class Variable :
         if len(shape) == 1 and isinstance(shape[0], (tuple, list)) :
             shape = shape[0]
         return reshape(self, shape)
+    
+    def transpose(self) :
+        return transpose(self)
+    @property
+    def T(self) :
+        return transpose(self)
 
 def as_variable(input) :
     if not isinstance(input, Variable) :
@@ -250,6 +256,16 @@ class Reshape(Function) :
         return reshape(gy, self.input_shape)
 def reshape(x, shape) :
     func = Reshape(shape)
+    return func(x)
+
+class Transpose(Function) :
+    def forward(self, x) :
+        return np.transpose(x)
+    def backward(self, gy):
+        # gy的类型是 Variable , 反向传播需要建立图，也就是要调用 DeZero 的方法实现
+        return transpose(gy)
+def transpose(x) :
+    func = Transpose()
     return func(x)
 
 def setup_variable() :

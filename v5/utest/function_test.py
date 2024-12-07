@@ -82,5 +82,23 @@ class AddTest(unittest.TestCase) :
     y.backward()
     self.assertTrue(np.array_equal(x.grad.data, [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]))
 
+  def test_transpose(self) :
+    x = Variable(np.array([[1.0, 2.0, 3.0],[4.0, 5.0, 6.0]]))
+    y = transpose(x)
+    self.assertTrue(np.array_equal(y.data, [[1.0,4.0], [2.0, 5.0], [3.0, 6.0]]))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [[1.0, 1.0, 1.0],[1.0, 1.0, 1.0]]))
+
+    x.cleargrad()
+    y = x.transpose()
+    self.assertTrue(np.array_equal(y.data, [[1.0,4.0], [2.0, 5.0], [3.0, 6.0]]))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [[1.0, 1.0, 1.0],[1.0, 1.0, 1.0]]))
+
+    x.cleargrad()
+    y = x.T
+    self.assertTrue(np.array_equal(y.data, [[1.0,4.0], [2.0, 5.0], [3.0, 6.0]]))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [[1.0, 1.0, 1.0],[1.0, 1.0, 1.0]]))
 
 unittest.main()
