@@ -268,6 +268,21 @@ def transpose(x) :
     func = Transpose()
     return func(x)
 
+class Sum(Function) :
+    def __init__(self, axis, keepdims) :
+        self.axis = axis
+        self.keepdims = keepdims
+    def forward(self, x) :
+        self.input_shape = x.shape
+        return np.sum(x, axis=self.axis, keepdims=self.keepdims)
+    def backward(self, gy) :
+        # trick方法，这样反向传播没有用 dezero 实现的方法，会无法构建连接图，也就没法二次求导了
+        return Variable(np.ones(self.input_shape))
+        #return broadcast_to(gy, self.input_shape)
+def sum(x, axis=None, keepdims=False) :
+    func = Sum(axis, keepdims)
+    return func(x)
+
 def setup_variable() :
   Variable.__add__ = add
   Variable.__radd__ = add
