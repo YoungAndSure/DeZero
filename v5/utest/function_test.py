@@ -120,4 +120,17 @@ class AddTest(unittest.TestCase) :
     y.backward()
     self.assertTrue(np.array_equal(x.grad.data, [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]))
 
+  def test_broadcast2_sum2(self) :
+    x = Variable(np.array([1.0, 2.0, 3.0]))
+    y = broadcast_to(x, (2, 3))
+    self.assertTrue(np.array_equal(y.data, [[1.0,2.0,3.0],[1.0,2.0,3.0]]))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [2.0, 2.0, 2.0]))
+
+    x.cleargrad()
+    z = sum_to(y, (1,3))
+    self.assertTrue(np.array_equal(z.data, [[2.0, 4.0, 6.0]]))
+    z.backward(retain_grad=True)
+    self.assertTrue(np.array_equal(y.grad.data, [[1.0,1.0,1.0],[1.0,1.0,1.0]]))
+
 unittest.main()

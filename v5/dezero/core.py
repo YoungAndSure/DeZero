@@ -2,6 +2,7 @@ import numpy as np
 import numpy
 import weakref
 from dezero.config import *
+import dezero.util
 
 class Variable :
     def __init__(self, data, name=None) :
@@ -277,11 +278,72 @@ class Sum(Function) :
         return np.sum(x, axis=self.axis, keepdims=self.keepdims)
     def backward(self, gy) :
         # trick方法，这样反向传播没有用 dezero 实现的方法，会无法构建连接图，也就没法二次求导了
-        return Variable(np.ones(self.input_shape))
-        #return broadcast_to(gy, self.input_shape)
+        #return Variable(np.ones(self.input_shape))
+        gy = Utils.reshape_sum_backward(gy, self.input_shape, self.axis, self.keepdims)
+        gy = broadcast_to(gy, self.input_shape)
+        return gy
 def sum(x, axis=None, keepdims=False) :
     func = Sum(axis, keepdims)
     return func(x)
+
+class BroadcastTo(Function) :
+    def __init__(self, output_shape) :
+        self.output_shape = output_shape
+    def forward(self, x) :
+        self.input_shape = x.shape
+        return np.broadcast_to(x, self.output_shape)
+    def backward(self, gy) :
+        return sum_to(gy, self.input_shape)
+def broadcast_to(x, shape) :
+    func = BroadcastTo(shape)
+    return func(x)
+
+class SumTo(Function) :
+    def __init__(self, output_shape) :
+        self.output_shape = output_shape
+    def forward(self, x) :
+        self.input_shape = x.shape
+        return Utils.sum_to(x, self.output_shape)
+    def backward(self, gy) :
+        return broadcast_to(gy, self.input_shape)
+def sum_to(x, shape) :
+    func = SumTo(shape)
+    return func(x)
+
+class Utils :
+    @staticmethod
+    def sum_to(x, shape) :
+        # copy from book example
+        ndim = len(shape)
+        lead = x.ndim - ndim
+        lead_axis = tuple(range(lead))
+
+        axis = tuple([i + lead for i, sx in enumerate(shape) if sx == 1])
+        y = x.sum(lead_axis + axis, keepdims=True)
+        if lead > 0:
+            y = y.squeeze(lead_axis)
+        return y
+
+    @staticmethod
+    def reshape_sum_backward(gy, input_shape, axis, keepdims) :
+        # copy from book example
+        ndim = len(input_shape)
+        tupled_axis = axis
+        if axis is None:
+            tupled_axis = None
+        elif not isinstance(axis, tuple):
+            tupled_axis = (axis,)
+
+        if not (ndim == 0 or tupled_axis is None or keepdims):
+            actual_axis = [a if a >= 0 else a + ndim for a in tupled_axis]
+            shape = list(gy.shape)
+            for a in sorted(actual_axis):
+                shape.insert(a, 1)
+        else:
+            shape = gy.shape
+
+        gy = gy.reshape(shape)  # reshape
+        return gy
 
 def setup_variable() :
   Variable.__add__ = add
