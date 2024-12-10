@@ -137,10 +137,14 @@ class Function :
 
 class Add(Function) :
     def forward(self, x0, x1) :
+        self.x0_shape = x0.shape
+        self.x1_shape = x1.shape
         y = x0 + x1
         return y
     def backward(self, gy) :
-        return (gy, gy)
+        gy0 = sum_to(gy, self.x0_shape)
+        gy1 = sum_to(gy, self.x1_shape)
+        return (gy0, gy1)
 def add(*inputs) :
     func = Add()
     return func(*inputs)
@@ -279,6 +283,7 @@ class Sum(Function) :
     def backward(self, gy) :
         # trick方法，这样反向传播没有用 dezero 实现的方法，会无法构建连接图，也就没法二次求导了
         #return Variable(np.ones(self.input_shape))
+        # TODO:抄的人家的代码，没有特别明白
         gy = Utils.reshape_sum_backward(gy, self.input_shape, self.axis, self.keepdims)
         gy = broadcast_to(gy, self.input_shape)
         return gy

@@ -132,5 +132,14 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.array_equal(z.data, [[2.0, 4.0, 6.0]]))
     z.backward(retain_grad=True)
     self.assertTrue(np.array_equal(y.grad.data, [[1.0,1.0,1.0],[1.0,1.0,1.0]]))
+  
+  def test_support_broadcast2_add(self) :
+    x = Variable(np.array([1.0, 2.0, 3.0]))
+    y = Variable(np.array([1.0]))
+    z = x + y
+    self.assertTrue(np.array_equal(z.data, [2.0, 3.0, 4.0]))
+    z.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [1.0, 1.0, 1.0]))
+    self.assertTrue(np.array_equal(y.grad.data, [3.0]))
 
 unittest.main()
