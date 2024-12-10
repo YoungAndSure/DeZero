@@ -101,6 +101,12 @@ class AddTest(unittest.TestCase) :
     y.backward()
     self.assertTrue(np.array_equal(x.grad.data, [[1.0, 1.0, 1.0],[1.0, 1.0, 1.0]]))
 
+    x = Variable(np.array([1.0, 2.0, 3.0]))
+    y = x.T
+    self.assertTrue(np.array_equal(y.data, [[1.0], [2.0], [3.0]]))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [1.0, 1.0, 1.0]))
+
   def test_sum(self) :
     x = Variable(np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]))
     y = sum(x)
@@ -141,5 +147,13 @@ class AddTest(unittest.TestCase) :
     z.backward()
     self.assertTrue(np.array_equal(x.grad.data, [1.0, 1.0, 1.0]))
     self.assertTrue(np.array_equal(y.grad.data, [3.0]))
+  
+  def test_matmul(self) :
+    x = Variable(np.array([[1.0, 2.0, 3.0]]))
+    W = Variable(np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]))
+    y = matmul(x, W)
+    self.assertTrue(np.array_equal(y.data, np.array([[22, 28]])))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.data, np.array([[3.0, 7.0, 11.0]])))
 
 unittest.main()

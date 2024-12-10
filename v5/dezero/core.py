@@ -265,7 +265,14 @@ def reshape(x, shape) :
 
 class Transpose(Function) :
     def forward(self, x) :
-        return np.transpose(x)
+        if x.ndim == 1 :
+            y = np.transpose(x).reshape(-1, 1)
+        elif x.shape[-1] == 1 :
+            y = np.transpose(x).ravel()
+        else :
+            y = np.transpose(x)
+        return y
+        #return np.transpose(x) if x.ndim != 1 else np.transpose(x).reshape(-1, 1)
     def backward(self, gy):
         # gy的类型是 Variable , 反向传播需要建立图，也就是要调用 DeZero 的方法实现
         return transpose(gy)
@@ -314,6 +321,27 @@ class SumTo(Function) :
 def sum_to(x, shape) :
     func = SumTo(shape)
     return func(x)
+
+class MatMul(Function) :
+    def forward(self, x, W) :
+        return np.dot(x, W)
+    def backward(self, gy) :
+        x = self.inputs[0]
+        W = self.inputs[1]
+        # 如果x是一维的，ndim == 1，x转置后就是二维的，ndim ==2
+        # 而gy和y形状一样，是一维的,ndim == 1,没法和x.T相乘了,
+        # 所以这里必须升一下维度，但是目前这么写没法处理三维的
+
+        # 以上都不对，x和w的维度应该一致，不应该输入x是一维的，w是二维的，就会出现各种对不上的问题
+        # 这段代码保留，理论上不会执行
+        if gy.data.ndim == 1 :
+            gy.data = gy.data.reshape(1, len(gy.data))
+        gx = matmul(gy, W.T)
+        gW = matmul(x.T, gy)
+        return (gx, gW)
+def matmul(x, W) :
+    func = MatMul()
+    return func(x, W)
 
 class Utils :
     @staticmethod
