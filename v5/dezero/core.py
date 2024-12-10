@@ -343,6 +343,22 @@ def matmul(x, W) :
     func = MatMul()
     return func(x, W)
 
+class MeanSquare(Function) :
+    def forward(self, x0, x1) :
+        diff = x0 - x1
+        diff = diff ** 2
+        self.N = len(diff.data)
+        return diff / self.N
+    def backward(self, gy) :
+        x0 = self.inputs[0]
+        x1 = self.inputs[1]
+        gy0 = (2 / self.N) * (x0 - x1) * gy
+        gy1 = (2 / self.N) * (x0 - x1) * -1 * gy
+        return (gy0, gy1)
+def mean_square(x0, x1) :
+    func = MeanSquare()
+    return func(x0, x1)
+
 class Utils :
     @staticmethod
     def sum_to(x, shape) :
