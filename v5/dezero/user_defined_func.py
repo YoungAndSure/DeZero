@@ -39,3 +39,15 @@ def taylor_sin(x, threshold=0.0001) :
 
 def rosenbrock(x0, x1) :
   return 100 * (x1 - (x0 ** 2)) ** 2 + (x0 - 1) ** 2
+
+def mean_square_error_simple(x0, x1) :
+  diff = x0 - x1
+  diff = diff ** 2
+  return diff / len(diff.data)
+
+def linear_simple(x, W, b) :
+  t = matmul(x, W)
+  if b == None :
+      return t
+  y = t + b
+  return y

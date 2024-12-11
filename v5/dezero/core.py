@@ -265,12 +265,13 @@ def reshape(x, shape) :
 
 class Transpose(Function) :
     def forward(self, x) :
-        if x.ndim == 1 :
-            y = np.transpose(x).reshape(-1, 1)
-        elif x.shape[-1] == 1 :
-            y = np.transpose(x).ravel()
-        else :
-            y = np.transpose(x)
+        # 不用特殊处理一维数据, 一维实际就是不能转置的
+        #if x.ndim == 1 :
+        #    y = np.transpose(x).reshape(-1, 1)
+        #elif x.shape[-1] == 1 :
+        #    y = np.transpose(x).ravel()
+        #else :
+        y = np.transpose(x)
         return y
         #return np.transpose(x) if x.ndim != 1 else np.transpose(x).reshape(-1, 1)
     def backward(self, gy):
@@ -334,8 +335,8 @@ class MatMul(Function) :
 
         # 以上都不对，x和w的维度应该一致，不应该输入x是一维的，w是二维的，就会出现各种对不上的问题
         # 这段代码保留，理论上不会执行
-        if gy.data.ndim == 1 :
-            gy.data = gy.data.reshape(1, len(gy.data))
+        #if gy.data.ndim == 1 :
+        #    gy.data = gy.data.reshape(1, len(gy.data))
         gx = matmul(gy, W.T)
         gW = matmul(x.T, gy)
         return (gx, gW)
@@ -358,6 +359,26 @@ class MeanSquareError(Function) :
 def mean_square_error(x0, x1) :
     func = MeanSquareError()
     return func(x0, x1)
+
+class Linear(Function) :
+    def forward(self, x, W, b=None) :
+        # forward已经在一个Function里了，入出参都是np.array，不能再调用另一个Function
+        # backward因为出入参是Variable类型，且需要建立反向传播的连接图，所以必须调用其他已经实现的Function
+        t = np.dot(x, W)
+        if b == None :
+            return t
+        self.b_shape = b.shape
+        y = t + b
+        return y
+    def backward(self, gy) :
+        # 入参是3个，返回梯度也是3个，一一对应
+        gW = matmul(self.inputs[0].T, gy)
+        gb = sum_to(gy, self.b_shape)
+        gx = matmul(gy, self.inputs[1].T)
+        return (gx, gW, gb)
+def linear(x, W, b) :
+    func = Linear()
+    return func(x, W, b)
 
 class Utils :
     @staticmethod

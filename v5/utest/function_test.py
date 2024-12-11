@@ -103,7 +103,9 @@ class AddTest(unittest.TestCase) :
 
     x = Variable(np.array([1.0, 2.0, 3.0]))
     y = x.T
-    self.assertTrue(np.array_equal(y.data, [[1.0], [2.0], [3.0]]))
+    # 输入是一维的，输出就也是一维的，如果想转置后成一列，输入要写成二维的
+    #self.assertTrue(np.array_equal(y.data, [[1.0], [2.0], [3.0]]))
+    self.assertTrue(np.array_equal(y.data, [1.0, 2.0, 3.0]))
     y.backward()
     self.assertTrue(np.array_equal(x.grad.data, [1.0, 1.0, 1.0]))
 
@@ -163,5 +165,24 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.array_equal(y.data, np.array([3.0, 3.0, 3.0])))
     y.backward()
     self.assertTrue(np.array_equal(x0.grad.data, [-2.0, -2.0, -2.0]))
+
+  def test_linear(self) :
+    x0 = Variable(np.ones((100, 1)))
+    W0 = Variable(np.ones((1, 1)))
+    b0 = Variable(np.ones((1,)))
+    y0 = linear(x0, W0, b0)
+    self.assertTrue(np.array_equal(y0.data, np.ones((100, 1)) + 1))
+    y0.backward()
+
+    x1 = Variable(np.ones((100, 1)))
+    W1 = Variable(np.ones((1, 1)))
+    b1 = Variable(np.ones((1,)))
+    y1 = linear_simple(x1, W1, b1)
+    self.assertTrue(np.array_equal(y1.data, np.ones((100, 1)) + 1))
+    y1.backward()
+
+    self.assertTrue(np.array_equal(W0.grad.data, W1.grad.data))
+    self.assertTrue(np.array_equal(b0.grad.data, b1.grad.data))
+    self.assertTrue(np.array_equal(x0.grad.data, x1.grad.data))
 
 unittest.main()

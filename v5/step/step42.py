@@ -14,11 +14,6 @@ def predict(x, W, b) :
   y = matmul(x, W) + b
   return y
 
-def mean_square_error_simple(x0, x1) :
-  diff = x0 - x1
-  diff = diff ** 2
-  return diff / len(diff.data)
-
 def use_simple() :
   # W形状由x和y的形状决定，x是(100,1)，y是(100,1)，只有W是(1,1)才能点乘
   W = Variable(np.zeros((1, 1)))
