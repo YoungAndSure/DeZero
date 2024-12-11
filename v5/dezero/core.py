@@ -343,7 +343,7 @@ def matmul(x, W) :
     func = MatMul()
     return func(x, W)
 
-class MeanSquare(Function) :
+class MeanSquareError(Function) :
     def forward(self, x0, x1) :
         diff = x0 - x1
         diff = diff ** 2
@@ -355,8 +355,8 @@ class MeanSquare(Function) :
         gy0 = (2 / self.N) * (x0 - x1) * gy
         gy1 = (2 / self.N) * (x0 - x1) * -1 * gy
         return (gy0, gy1)
-def mean_square(x0, x1) :
-    func = MeanSquare()
+def mean_square_error(x0, x1) :
+    func = MeanSquareError()
     return func(x0, x1)
 
 class Utils :

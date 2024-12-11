@@ -156,10 +156,10 @@ class AddTest(unittest.TestCase) :
     y.backward()
     self.assertTrue(np.array_equal(x.grad.data, np.array([[3.0, 7.0, 11.0]])))
 
-  def test_mean_square(self) :
+  def test_mean_square_error(self) :
     x0 = Variable(np.array([4,5,6]))
     x1 = Variable(np.array([7,8,9]))
-    y = mean_square(x0, x1)
+    y = mean_square_error(x0, x1)
     self.assertTrue(np.array_equal(y.data, np.array([3.0, 3.0, 3.0])))
     y.backward()
     self.assertTrue(np.array_equal(x0.grad.data, [-2.0, -2.0, -2.0]))
