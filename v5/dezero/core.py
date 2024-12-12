@@ -365,7 +365,7 @@ class Linear(Function) :
         # forward已经在一个Function里了，入出参都是np.array，不能再调用另一个Function
         # backward因为出入参是Variable类型，且需要建立反向传播的连接图，所以必须调用其他已经实现的Function
         t = np.dot(x, W)
-        if b == None :
+        if b is None :
             return t
         self.b_shape = b.shape
         y = t + b
@@ -376,9 +376,9 @@ class Linear(Function) :
         gb = sum_to(gy, self.b_shape)
         gx = matmul(gy, self.inputs[1].T)
         return (gx, gW, gb)
-def linear(x, W, b) :
+def linear(*input) :
     func = Linear()
-    return func(x, W, b)
+    return func(*input)
 
 class Utils :
     @staticmethod
