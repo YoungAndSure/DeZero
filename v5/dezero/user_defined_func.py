@@ -50,4 +50,5 @@ def linear_simple(x, W, b) :
   if b == None :
       return t
   y = t + b
+  t.data = None
   return y
