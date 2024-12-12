@@ -185,4 +185,11 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.array_equal(b0.grad.data, b1.grad.data))
     self.assertTrue(np.array_equal(x0.grad.data, x1.grad.data))
 
+  def test_sigmod_simple(self) :
+    x = Variable(np.array([0, 0, 0]))
+    y = sigmod_simple(x)
+    self.assertTrue(np.array_equal(y.data, [0.5, 0.5, 0.5]))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [0.25, 0.25, 0.25]))
+
 unittest.main()

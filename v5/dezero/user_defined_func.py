@@ -52,3 +52,6 @@ def linear_simple(x, W, b) :
   y = t + b
   t.data = None
   return y
+
+def sigmod_simple(x) :
+  return 1.0 / (1.0 + exp(-1.0 * x))

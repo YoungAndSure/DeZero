@@ -185,7 +185,7 @@ class Exp(Function) :
     def forward(self, x) :
         return np.exp(x)
     def backward(self, gy) :
-        return np.exp(self.inputs[0]) * gy
+        return exp(self.inputs[0]) * gy
 def exp(*x) :
     f = Exp()
     return f(*x)
