@@ -97,6 +97,26 @@ def as_array(x) :
         return np.array(x)
     return x
 
+def setup_variable() :
+  Variable.__add__ = add
+  Variable.__radd__ = add
+
+  Variable.__mul__ = mul
+  Variable.__rmul__ = mul
+
+  Variable.__sub__ = sub
+  Variable.__rsub__ = rsub
+
+  Variable.__neg__ = neg
+
+  Variable.__truediv__ = div
+  Variable.__rtruediv__ = rdiv
+
+  Variable.__pow__ = pow
+
+  Variable.__array_priority__ = 200
+
+
 class Function :
     def __call__(self, *inputs) :
         inputs = [as_variable(as_array(input)) for input in inputs]
@@ -111,6 +131,7 @@ class Function :
 
             # 真他妈巧妙，这里function持有的是虚的，向后传递的是实的，不用改动任何接口
             # 只有在用function里这个output的时候才需要加()
+            # THINK: 为什么这里output是虚的，input要是实的?
             self.outputs = weakref.ref(outputs)
             self.inputs = inputs
         return outputs
@@ -415,21 +436,37 @@ class Utils :
         gy = gy.reshape(shape)  # reshape
         return gy
 
-def setup_variable() :
-  Variable.__add__ = add
-  Variable.__radd__ = add
+class Parameter(Variable) :
+    pass
 
-  Variable.__mul__ = mul
-  Variable.__rmul__ = mul
+class Layer :
+    def __init__(self) :
+        self._params = set()
+    
+    def __set_attr__(self, name, value) :
+        if not isinstance(Parameter, value) :
+            return
+        self._params.add(name)
+        super().__set_attr__(name, value)
+    
+    def __call__(self, *inputs) :
+        outputs = forward(*inputs)
+        if not isinstance(outputs, tuple) :
+            outputs = (outputs,)
+        self.inputs = weakref.ref(inputs)
+        self.outputs = weakref.ref(outputs)
+        return outputs if len(outputs) > 0 else outputs[0]
+ 
+    def forward(self) :
+        raise NotImplementedError()
 
-  Variable.__sub__ = sub
-  Variable.__rsub__ = rsub
+    def params() :
+        # 为什么不直接遍历__dict__，而是非要存储个params？
+        # 因为class的所有属性都会存在__dict__中，包括上边的inputs/outputs
+        # 而用户只需要返回 params
+        for name in self._params :
+            yield self.__dict__[name]
 
-  Variable.__neg__ = neg
-
-  Variable.__truediv__ = div
-  Variable.__rtruediv__ = rdiv
-
-  Variable.__pow__ = pow
-
-  Variable.__array_priority__ = 200
+    def cleargrad() :
+        for name in self._params :
+            self.__dict__[name].cleargrad()
