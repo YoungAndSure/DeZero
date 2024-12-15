@@ -435,38 +435,3 @@ class Utils :
 
         gy = gy.reshape(shape)  # reshape
         return gy
-
-class Parameter(Variable) :
-    pass
-
-class Layer :
-    def __init__(self) :
-        self._params = set()
-    
-    def __set_attr__(self, name, value) :
-        if not isinstance(Parameter, value) :
-            return
-        self._params.add(name)
-        super().__set_attr__(name, value)
-    
-    def __call__(self, *inputs) :
-        outputs = forward(*inputs)
-        if not isinstance(outputs, tuple) :
-            outputs = (outputs,)
-        self.inputs = weakref.ref(inputs)
-        self.outputs = weakref.ref(outputs)
-        return outputs if len(outputs) > 0 else outputs[0]
- 
-    def forward(self) :
-        raise NotImplementedError()
-
-    def params() :
-        # 为什么不直接遍历__dict__，而是非要存储个params？
-        # 因为class的所有属性都会存在__dict__中，包括上边的inputs/outputs
-        # 而用户只需要返回 params
-        for name in self._params :
-            yield self.__dict__[name]
-
-    def cleargrad() :
-        for name in self._params :
-            self.__dict__[name].cleargrad()
