@@ -9,12 +9,12 @@ import matplotlib.pyplot as plt
 
 np.random.seed(0)
 x = np.random.rand(100, 1)
-label_y = np.sin(2 * np.pi * x) + np.random.rand(100, 1)
+label_y = np.sin(2 * np.pi * x)# + np.random.rand(100, 1)
 
 I,H,O = 1, 10, 1
-W1 = Variable(np.random.rand(I, H))
+W1 = Variable(np.random.randn(I, H))
 b1 = Variable(np.zeros(H))
-W2 = Variable(np.random.rand(H, O))
+W2 = Variable(np.random.randn(H, O))
 b2 = Variable(np.zeros(O))
 
 def predict(x) :
@@ -38,14 +38,17 @@ for i in range(iters) :
 
   loss.backward()
 
-  W1.data -= W1.grad.data
-  b1.data -= b1.grad.data
-  W2.data -= W2.grad.data
-  b2.data -= b2.grad.data
+  W1.data -= lr * W1.grad.data
+  b1.data -= lr * b1.grad.data
+  W2.data -= lr * W2.grad.data
+  b2.data -= lr * b2.grad.data
 
 x_data = x.squeeze()
 y_data = predict(x).data.squeeze()
-print(x_data, y_data)
+print(x_data)
+print(label_y.squeeze())
+print(y_data)
+'''
 plt.ion()
 plt.plot(x_data, y_data)
 
@@ -56,3 +59,4 @@ plt.ylabel("Y Axis")
 # 显示图形
 plt.show()
 input("Press any key to exit...")
+'''

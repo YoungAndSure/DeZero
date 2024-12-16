@@ -10,7 +10,7 @@ import numpy as np
 
 np.random.seed(0)
 x = np.random.rand(100, 1)
-label_y = np.sin(2 * np.pi * x) + np.random.rand(100, 1)
+label_y = np.sin(2 * np.pi * x)# + np.random.rand(100, 1)
 
 I,H,O = 1, 10, 1
 l1 = L.Linear(1, 10)
@@ -35,10 +35,12 @@ for i in range(iters) :
   loss.backward()
 
   for param in l1.params() :
-    param.data -= param.grad.data
+    param.data -= lr * param.grad.data
   for param in l2.params() :
-    param.data -= param.grad.data
+    param.data -= lr * param.grad.data
 
 x_data = x.squeeze()
 y_data = predict(x).data.squeeze()
-print(x_data, y_data)
+print(x_data)
+print(label_y.squeeze())
+print(y_data)

@@ -199,10 +199,10 @@ class AddTest(unittest.TestCase) :
   def test_linear_layer2(self) :
     np.random.seed(0)
     x = np.random.rand(100, 1)
-    label_y = np.sin(2 * np.pi * x) + np.random.rand(100, 1)
-    print(label_y)
+    label_y = np.sin(2 * np.pi * x)# + np.random.rand(100, 1)
+    print(label_y.squeeze())
 
-    iters = 1000
+    iters = 10000
     lr = 0.1
 
     I,H,O = 1, 10, 1
@@ -210,26 +210,25 @@ class AddTest(unittest.TestCase) :
       l1 = L.Linear(I, H)
       l2 = L.Linear(H, O)
 
-      def predict(x) :
+      def predict0(x) :
         y = l1(x)
         y = sigmod_simple(y)
         y = l2(y)
-        y = sigmod_simple(y)
+        #y = sigmod_simple(y)
         return y
 
       for i in range(iters) :
-        predict_y = predict(x)
+        predict_y = predict0(x)
         loss = mean_square_error(predict_y, label_y)
         l1.cleargrad()
         l2.cleargrad()
         loss.backward()
-        for param in l1.params() :
-          param.data -= param.grad.data
-        for param in l2.params() :
-          param.data -= param.grad.data
+        for l in (l1, l2) :
+          for param in l.params() :
+            param.data -= lr * param.grad.data
 
       x_data = x.squeeze()
-      y_data = predict(x).data.squeeze()
+      y_data = predict0(x).data.squeeze()
       print(y_data)
       return x_data, y_data
 
@@ -239,15 +238,15 @@ class AddTest(unittest.TestCase) :
       W2 = Variable(np.random.rand(H, O))
       b2 = Variable(np.zeros(O))
 
-      def predict(x) :
+      def predict1(x) :
         y = linear(x, W1, b1)
         y = sigmod_simple(y)
         y = linear(y, W2, b2)
-        y = sigmod_simple(y)
+        #y = sigmod_simple(y)
         return y
 
       for i in range(iters) :
-        predict_y = predict(x)
+        predict_y = predict1(x)
         loss = mean_square_error(predict_y, label_y)
 
         W1.cleargrad()
@@ -257,18 +256,21 @@ class AddTest(unittest.TestCase) :
 
         loss.backward()
 
-        W1.data -= W1.grad.data
-        b1.data -= b1.grad.data
-        W2.data -= W2.grad.data
-        b2.data -= b2.grad.data
+        W1.data -= lr * W1.grad.data
+        b1.data -= lr * b1.grad.data
+        W2.data -= lr * W2.grad.data
+        b2.data -= lr * b2.grad.data
 
       x_data = x.squeeze()
-      y_data = predict(x).data.squeeze()
+      y_data = predict1(x).data.squeeze()
       print(y_data)
       return x_data, y_data
     
     use_layer_result = use_layer()
     use_function_result = use_function()
     self.assertEqual(len(use_layer_result), len(use_function_result))
+    self.assertTrue(np.array_equal(use_layer_result[0], use_function_result[0]))
+    # TODO: 不过，找不到原因
+    #self.assertTrue(np.array_equal(use_layer_result[1], use_function_result[1]))
 
 unittest.main()
