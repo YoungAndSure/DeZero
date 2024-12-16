@@ -10,9 +10,8 @@ class Layer :
         self._params = set()
     
     def __set_attr__(self, name, value) :
-        if not isinstance(Parameter, value) :
-            return
-        self._params.add(name)
+        if isinstance(Parameter, value) :
+            self._params.add(name)
         super().__set_attr__(name, value)
     
     def __call__(self, *inputs) :
@@ -44,10 +43,10 @@ class Linear(Layer) :
         super().__init__()
         I = in_size
         O = out_size
-        W_data = np.random.rand(I, O).astype(dtype) / np.sqrt(1 / I)
-        self.W = Parameter(W_data)
+        W_data = np.random.randn(I, O).astype(dtype) / np.sqrt(1 / I)
+        self.W = Parameter(W_data, name='W')
         if has_bias :
-            self.b = Parameter(np.zeros(O, dtype=dtype))
+            self.b = Parameter(np.zeros(O, dtype=dtype), name='b')
         else :
             self.b = None
 
