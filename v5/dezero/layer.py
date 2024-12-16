@@ -41,15 +41,23 @@ class Layer :
 class Linear(Layer) :
     def __init__(self, in_size, out_size, has_bias=True, dtype=np.float32) :
         super().__init__()
-        I = in_size
-        O = out_size
-        W_data = np.random.randn(I, O).astype(dtype) / np.sqrt(1 / I)
+        self.I = in_size
+        self.O = out_size
+        self.W = None
+        self.has_bias = has_bias
+        self.dtype = dtype
+
+    def _init_W(self) :
+        if self.W != None :
+            return
+        W_data = np.random.randn(self.I, self.O).astype(self.dtype) / np.sqrt(1 / self.I)
         self.W = Parameter(W_data, name='W')
-        if has_bias :
-            self.b = Parameter(np.zeros(O, dtype=dtype), name='b')
+        if self.has_bias :
+            self.b = Parameter(np.zeros(self.O, dtype=self.dtype), name='b')
         else :
             self.b = None
 
     def forward(self, x) :
+        self._init_W()
         y = Core.linear(x, self.W, self.b)
         return y

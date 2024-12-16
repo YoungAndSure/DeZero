@@ -200,9 +200,9 @@ class AddTest(unittest.TestCase) :
     np.random.seed(0)
     x = np.random.rand(100, 1)
     label_y = np.sin(2 * np.pi * x)# + np.random.rand(100, 1)
-    print(label_y.squeeze())
+    #print(label_y.squeeze())
 
-    iters = 10000
+    iters = 1000
     lr = 0.1
 
     I,H,O = 1, 10, 1
@@ -229,7 +229,6 @@ class AddTest(unittest.TestCase) :
 
       x_data = x.squeeze()
       y_data = predict0(x).data.squeeze()
-      print(y_data)
       return x_data, y_data
 
     def use_function() :
@@ -263,7 +262,6 @@ class AddTest(unittest.TestCase) :
 
       x_data = x.squeeze()
       y_data = predict1(x).data.squeeze()
-      print(y_data)
       return x_data, y_data
     
     use_layer_result = use_layer()
