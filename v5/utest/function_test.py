@@ -12,6 +12,7 @@ from dezero.core import *
 from dezero.config import *
 from dezero.user_defined_func import *
 from dezero.util import _dot_var, _dot_func, get_dot_graph, plot_dot_graph
+import dezero.layer as L
 
 class AddTest(unittest.TestCase) :
   def test_backward(self) :
@@ -191,5 +192,11 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.array_equal(y.data, [0.5, 0.5, 0.5]))
     y.backward()
     self.assertTrue(np.array_equal(x.grad.data, [0.25, 0.25, 0.25]))
+  
+  def test_linear_layer(self) :
+    x0 = Variable(np.ones((100, 1)))
+    layer = L.Linear(in_size = 1, out_size = 1, has_bias = True, dtype = np.float32)
+    y0 = layer(x0)
+    self.assertTrue(isinstance(y0, Variable))
 
 unittest.main()

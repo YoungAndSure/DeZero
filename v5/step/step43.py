@@ -6,7 +6,6 @@ if '__file__' in globals() :
 
 from dezero import *
 import matplotlib.pyplot as plt
-plt.use('TkAgg')
 
 np.random.seed(0)
 x = np.random.rand(100, 1)
@@ -46,6 +45,7 @@ for i in range(iters) :
 
 x_data = x.squeeze()
 y_data = predict(x).data.squeeze()
+print(x_data, y_data)
 plt.ion()
 plt.plot(x_data, y_data)
 

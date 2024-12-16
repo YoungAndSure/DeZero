@@ -35,8 +35,8 @@ class Layer :
         for name in self._params :
             yield self.__dict__[name]
 
-    def cleargrad() :
-        for param in params() :
+    def cleargrad(self) :
+        for param in self.params() :
             param.cleargrad()
 
 class Linear(Layer) :
