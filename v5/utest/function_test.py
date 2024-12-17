@@ -269,6 +269,8 @@ class AddTest(unittest.TestCase) :
     self.assertEqual(len(use_layer_result), len(use_function_result))
     self.assertTrue(np.array_equal(use_layer_result[0], use_function_result[0]))
     # TODO: 不过，找不到原因
+    print(use_layer_result[1])
+    print(use_function_result[1])
     #self.assertTrue(np.array_equal(use_layer_result[1], use_function_result[1]))
 
 unittest.main()

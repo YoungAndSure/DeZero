@@ -9,10 +9,10 @@ class Layer :
     def __init__(self) :
         self._params = set()
     
-    def __set_attr__(self, name, value) :
-        if isinstance(Parameter, value) :
+    def __setattr__(self, name, value) :
+        if isinstance(value, (Parameter, Layer)) :
             self._params.add(name)
-        super().__set_attr__(name, value)
+        super().__setattr__(name, value)
     
     def __call__(self, *inputs) :
         outputs = self.forward(*inputs)
@@ -32,7 +32,11 @@ class Layer :
         # 因为class的所有属性都会存在__dict__中，包括上边的inputs/outputs
         # 而用户只需要返回 params
         for name in self._params :
-            yield self.__dict__[name]
+            param = self.__dict__[name]
+            if isinstance(param, Parameter) :
+                yield param
+            else :
+                yield from param.params()
 
     def cleargrad(self) :
         for param in self.params() :
