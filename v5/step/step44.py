@@ -10,21 +10,20 @@ import numpy as np
 
 np.random.seed(0)
 x = np.random.rand(100, 1)
-label_y = np.sin(2 * np.pi * x)# + np.random.rand(100, 1)
+label_y = np.sin(2 * np.pi * x) + np.random.rand(100, 1)
 
 I,H,O = 1, 10, 1
-l1 = L.Linear(1, 10)
-l2 = L.Linear(10, 1)
+l1 = L.Linear(in_size = I, out_size = H)
+l2 = L.Linear(in_size = H, out_size = O)
 
 def predict(x) :
   y = l1(x)
   y = C.sigmod_simple(y)
   y = l2(y)
-  y = C.sigmod_simple(y)
   return y
 
-iters = 1000
-lr = 0.01
+iters = 10000
+lr = 0.2
 
 for i in range(iters) :
   predict_y = predict(x)
@@ -41,6 +40,5 @@ for i in range(iters) :
 
 x_data = x.squeeze()
 y_data = predict(x).data.squeeze()
-print(x_data)
 print(label_y.squeeze())
 print(y_data)

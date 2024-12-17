@@ -199,26 +199,24 @@ class AddTest(unittest.TestCase) :
   def test_linear_layer2(self) :
     np.random.seed(0)
     x = np.random.rand(100, 1)
-    label_y = np.sin(2 * np.pi * x)# + np.random.rand(100, 1)
-    #print(label_y.squeeze())
+    label_y = np.sin(2 * np.pi * x)
 
-    iters = 1000
-    lr = 0.1
+    iters = 10000
+    lr = 0.2
 
     I,H,O = 1, 10, 1
     def use_layer() :
-      l1 = L.Linear(I, H)
-      l2 = L.Linear(H, O)
+      l1 = L.Linear(in_size = I, out_size = H)
+      l2 = L.Linear(in_size = H, out_size = O)
 
-      def predict0(x) :
+      def predict(x) :
         y = l1(x)
         y = sigmod_simple(y)
         y = l2(y)
-        #y = sigmod_simple(y)
         return y
 
       for i in range(iters) :
-        predict_y = predict0(x)
+        predict_y = predict(x)
         loss = mean_square_error(predict_y, label_y)
         l1.cleargrad()
         l2.cleargrad()
@@ -227,9 +225,9 @@ class AddTest(unittest.TestCase) :
           for param in l.params() :
             param.data -= lr * param.grad.data
 
-      x_data = x.squeeze()
-      y_data = predict0(x).data.squeeze()
-      return x_data, y_data
+      y = predict(x)
+      loss = mean_square_error(y, label_y)
+      return loss.data
 
     def use_function() :
       W1 = Variable(np.random.rand(I, H))
@@ -237,15 +235,14 @@ class AddTest(unittest.TestCase) :
       W2 = Variable(np.random.rand(H, O))
       b2 = Variable(np.zeros(O))
 
-      def predict1(x) :
+      def predict(x) :
         y = linear(x, W1, b1)
         y = sigmod_simple(y)
         y = linear(y, W2, b2)
-        #y = sigmod_simple(y)
         return y
 
       for i in range(iters) :
-        predict_y = predict1(x)
+        predict_y = predict(x)
         loss = mean_square_error(predict_y, label_y)
 
         W1.cleargrad()
@@ -260,17 +257,18 @@ class AddTest(unittest.TestCase) :
         W2.data -= lr * W2.grad.data
         b2.data -= lr * b2.grad.data
 
-      x_data = x.squeeze()
-      y_data = predict1(x).data.squeeze()
-      return x_data, y_data
+      y = predict(x)
+      loss = mean_square_error(y, label_y)
+      return loss.data
     
-    use_layer_result = use_layer()
-    use_function_result = use_function()
-    self.assertEqual(len(use_layer_result), len(use_function_result))
-    self.assertTrue(np.array_equal(use_layer_result[0], use_function_result[0]))
-    # TODO: 不过，找不到原因
-    print(use_layer_result[1])
-    print(use_function_result[1])
-    #self.assertTrue(np.array_equal(use_layer_result[1], use_function_result[1]))
+    use_layer_loss = use_layer()
+    use_function_loss = use_function()
+    # DONE: 不过原因找到了。1. 是__setattr__，不是__set_attr__ 2. lr和iter太低，两个方式都没有收敛，所以和label差距大
+    # 3. 两个方法的迭代速度不同，layer要更快，所以一样的iter，两边的结果不同
+    # 4. 所以，不能比较预测结果，应该比较loss在一个合理范围内，就说明运行正常
+    # 5. 还有，in_size和out_size，需要显示指定，不然默认初始化到错误的入参了
+    loss_threshold = 1e-3
+    self.assertTrue((np.abs(use_layer_loss) < loss_threshold).all())
+    self.assertTrue((np.abs(use_function_loss) < loss_threshold).all())
 
 unittest.main()
