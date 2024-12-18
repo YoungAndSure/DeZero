@@ -13,10 +13,10 @@ class Optimizer :
     self.hooks.append(hook)
 
   def update(self) :
-    params = [param for param in self.target.params() if param.grad not None]
+    params = [param for param in self.target.params() if param.grad is not None]
 
     # hook是批处理，处理所有参数
-    for h in self.hooks() :
+    for h in self.hooks :
       h(params)
 
     # update_one的one意思是只处理一个param
