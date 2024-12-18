@@ -10,6 +10,7 @@ import math
 
 from dezero import *
 import dezero.layer as L
+import dezero.model as M
 
 class AddTest(unittest.TestCase) :
   def test_backward(self) :
@@ -270,5 +271,31 @@ class AddTest(unittest.TestCase) :
     loss_threshold = 1e-3
     self.assertTrue((np.abs(use_layer_loss) < loss_threshold).all())
     self.assertTrue((np.abs(use_function_loss) < loss_threshold).all())
+
+  def test_mlp(self) :
+    # 提前解锁隐藏关卡了，这里不能层数太多，会overflow，结果全是nan
+    layer_size = (10, 1)
+    mlp_model = M.MLP(full_connect_layer_size = layer_size)
+
+    np.random.seed(0)
+    x = np.random.rand(100, 1)
+    label_y = np.sin(2 * np.pi * x)
+
+    lr = 0.2
+    iters = 10000
+
+    for i in range(iters) :
+      py = mlp_model.forward(x)
+      loss = mean_square_error(py, label_y)
+      mlp_model.cleargrad()
+      loss.backward()
+
+      for param in mlp_model.params() :
+        param.data -= lr * param.grad.data
+
+    py = mlp_model.forward(x)
+    loss = mean_square_error(py, label_y)
+    loss_threshold = 1e-3
+    self.assertTrue((np.abs(loss.data) < loss_threshold).all())
 
 unittest.main()
