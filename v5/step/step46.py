@@ -18,7 +18,7 @@ lr = 0.2
 
 layer_size = (10, 1)
 mlp_model = M.MLP(layer_size)
-optimizer = O.SDG(lr).setup(mlp_model)
+optimizer = O.Momentum(lr).setup(mlp_model)
 
 iters = 10000
 for i in range(iters) :

@@ -1,4 +1,4 @@
-
+import numpy as np
 
 class Optimizer :
   def __init__(self) :
@@ -33,3 +33,19 @@ class SDG(Optimizer) :
 
   def update_one(self, param) :
     param.data -= self.lr * param.grad.data
+
+class Momentum(Optimizer) :
+  def __init__(self, lr, momentum=0.9) :
+    super().__init__()
+    self.lr = lr
+    self.momentum = momentum
+    self.vs = {}
+
+  def update_one(self, param) :
+    v_key = id(param)
+    if v_key not in self.vs :
+      self.vs[v_key] = np.zeros_like(param.data)
+
+    v = self.vs[v_key]
+    v = v * self.momentum - self.lr * param.grad.data
+    param.data += v
