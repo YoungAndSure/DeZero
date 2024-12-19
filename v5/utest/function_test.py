@@ -326,4 +326,24 @@ class AddTest(unittest.TestCase) :
     y.backward()
     self.assertTrue(np.allclose(x.grad.data, [[0.16629697,0.18961284,0.24877131],[0.15413868,0.21699148,0.24992426],[0.16904543,0.11931512,0.22867559],[0.14654381,0.20011686,0.24797577]]))
 
+  def test_clip(self) :
+    x = Variable(np.array(10.0))
+    y = clip(x, 100, 200)
+    y.backward()
+    self.assertEqual(y.data, 100)
+    self.assertEqual(x.grad.data, 0)
+
+    x = Variable(np.array(150.0))
+    y = clip(x, 100, 200)
+    y.backward()
+    self.assertEqual(y.data, 150)
+    self.assertEqual(x.grad.data, 1)
+'''
+    x = Variable(np.array([10.0, 150.0]))
+    y = clip(x, [100, 200], [100, 200])
+    y.backward()
+    self.assertEqual(y.data, [100, 150])
+    self.assertEqual(x.grad.data, [0, 1])
+'''
+
 unittest.main()

@@ -423,6 +423,23 @@ def get_item(x, slices) :
     func = GetItem(slices)
     return func(x)
 
+class Clip(Function) :
+    def __init__(self, x_min, x_max) :
+        self.x_min = x_min
+        self.x_max = x_max
+    def forward(self, x) :
+        if x < self.x_min :
+            return self.x_min
+        if x > self.x_max :
+            return self.x_max
+        return x
+    def backward(self, gy) :
+        x = self.inputs[0]
+        return gy * (x.data >= self.x_min) * (x.data <= self.x_max)
+def clip(x, x_min, x_max) :
+    func = Clip(x_min, x_max)
+    return func(x)
+
 class Utils :
     @staticmethod
     def sum_to(x, shape) :
