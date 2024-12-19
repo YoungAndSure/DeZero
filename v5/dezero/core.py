@@ -401,6 +401,28 @@ def linear(*input) :
     func = Linear()
     return func(*input)
 
+class GetItem(Function) :
+    def __init__(self, slices) :
+        self.slices = slices
+    def forward(self, x) :
+        return x[self.slices]
+    def backward(self, gy) :
+        f = GetItemGrad(self.slices, self.inputs[0].shape)
+        return f(gy)
+class GetItemGrad(Function) :
+    def __init__(self, slices, in_shape) :
+        self.slices = slices
+        self.in_shape = in_shape
+    def forward(self, x) :
+        y = np.zeros(self.in_shape)
+        np.add.at(y, self.slices, x)
+        return y
+    def backward(self, gy) :
+        return get_item(gy, self.slices)
+def get_item(x, slices) :
+    func = GetItem(slices)
+    return func(x)
+
 class Utils :
     @staticmethod
     def sum_to(x, shape) :

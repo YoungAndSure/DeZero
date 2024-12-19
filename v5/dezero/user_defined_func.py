@@ -55,3 +55,13 @@ def linear_simple(x, W, b) :
 
 def sigmod_simple(x) :
   return 1.0 / (1.0 + exp(-1.0 * x))
+
+def softmax1d(x) :
+  y = exp(x)
+  y_sum = sum(y)
+  return y / y_sum
+
+def softmax(x, axis=1, keepdims=True) :
+  y = exp(x)
+  y_sum = sum(y, axis=axis, keepdims=keepdims)
+  return y / y_sum

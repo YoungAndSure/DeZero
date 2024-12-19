@@ -298,4 +298,32 @@ class AddTest(unittest.TestCase) :
     loss_threshold = 1e-3
     self.assertTrue((np.abs(loss.data) < loss_threshold).all())
 
+  def test_get_item(self) :
+    x = Variable(np.array([[1,2,3],[4,5,6],[7,8,9]]))
+    y = get_item(x, 1)
+    # 数组表示切片，tuple表示取元素
+    y.backward()
+    self.assertTrue(np.array_equal(y.data, [4,5,6]))
+    self.assertTrue(np.array_equal(x.grad.data, [[0,0,0],[1,1,1],[0,0,0]]))
+
+    x.cleargrad()
+    z = get_item(x, [0,1,1])
+    z.backward()
+    self.assertTrue(np.array_equal(z.data, [[1,2,3],[4,5,6],[4,5,6]]))
+    self.assertTrue(np.array_equal(x.grad.data, [[1,1,1],[2,2,2],[0,0,0]]))
+
+  def test_softmax1d(self) :
+    x = Variable(np.array([0.1, 0.2, 0.3]))
+    y = softmax1d(x)
+    self.assertTrue(np.allclose(y.data, [0.30060961, 0.33222499, 0.3671654]))
+    y.backward()
+    self.assertTrue(np.allclose(x.grad.data, [0.21024347, 0.22185155, 0.23235497]))
+
+  def test_softmax(self) :
+    x = Variable(np.array([[-0.615, -0.427, 0.317],[-0.763, -0.249, 0.185],[-0.520, -0.962, 0.578],[-0.942, -0.503, 0.175]]))
+    y = softmax(x)
+    self.assertTrue(np.allclose(y.data, [[0.210, 0.254, 0.535],[0.190, 0.318, 0.491],[0.215, 0.138, 0.646],[0.178, 0.276, 0.545]], atol=0.001))
+    y.backward()
+    self.assertTrue(np.allclose(x.grad.data, [[0.16629697,0.18961284,0.24877131],[0.15413868,0.21699148,0.24992426],[0.16904543,0.11931512,0.22867559],[0.14654381,0.20011686,0.24797577]]))
+
 unittest.main()
