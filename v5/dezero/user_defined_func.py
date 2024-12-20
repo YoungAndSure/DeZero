@@ -65,3 +65,14 @@ def softmax(x, axis=1, keepdims=True) :
   y = exp(x)
   y_sum = sum(y, axis=axis, keepdims=keepdims)
   return y / y_sum
+
+def softmax_cross_entropy_simple(x, t) :
+  N = x.shape[0]
+
+  p = softmax(x)
+  p = clip(p, 1e-15, 1.0)
+  p = log(p)
+  # np的功能，N是行数，np.arange(N)就是逐行的意思,
+  # t.data是提供的切片slices，合起来也就是逐行按照t.data切片
+  p = p[np.arange(N), t.data]
+  return -1 * sum(p) / N

@@ -312,6 +312,13 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.array_equal(z.data, [[1,2,3],[4,5,6],[4,5,6]]))
     self.assertTrue(np.array_equal(x.grad.data, [[1,1,1],[2,2,2],[0,0,0]]))
 
+    x.cleargrad()
+    # 等同于调用get_item(x, [0,1,1])
+    z = x[[0,1,1]]
+    z.backward()
+    self.assertTrue(np.array_equal(z.data, [[1,2,3],[4,5,6],[4,5,6]]))
+    self.assertTrue(np.array_equal(x.grad.data, [[1,1,1],[2,2,2],[0,0,0]]))
+
   def test_softmax1d(self) :
     x = Variable(np.array([0.1, 0.2, 0.3]))
     y = softmax1d(x)
@@ -338,12 +345,26 @@ class AddTest(unittest.TestCase) :
     y.backward()
     self.assertEqual(y.data, 150)
     self.assertEqual(x.grad.data, 1)
-'''
+
     x = Variable(np.array([10.0, 150.0]))
-    y = clip(x, [100, 200], [100, 200])
+    y = clip(x, 100, 200)
     y.backward()
-    self.assertEqual(y.data, [100, 150])
-    self.assertEqual(x.grad.data, [0, 1])
-'''
+    self.assertTrue(np.array_equal(y.data, [100, 150]))
+    self.assertTrue(np.array_equal(x.grad.data, [0, 1]))
+
+  def test_log(self) :
+    x = Variable(np.array([1.0, 2.0]))
+    y = log(x)
+    self.assertTrue(np.allclose(y.data, [0, 0.693147]))
+    y.backward()
+    self.assertTrue(np.allclose(x.grad.data, [1.0, 0.5]))
+
+  def test_softmax_cross_entropy_simple(self) :
+    x = Variable(np.array([[0.1, 0.2]]))
+    t = Variable(np.array([[0, 1]]))
+    y = softmax_cross_entropy_simple(x, t)
+    self.assertTrue(np.allclose(y.data, 1.38879332))
+    y.backward()
+    self.assertTrue(np.allclose(x.grad.data, [[-0.52497919,-0.47502081]]))
 
 unittest.main()

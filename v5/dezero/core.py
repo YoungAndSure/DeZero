@@ -116,6 +116,8 @@ def setup_variable() :
 
   Variable.__array_priority__ = 200
 
+  Variable.__getitem__ = get_item
+
 
 class Function :
     def __call__(self, *inputs) :
@@ -365,6 +367,15 @@ def matmul(x, W) :
     func = MatMul()
     return func(x, W)
 
+class Log(Function) :
+    def forward(self, x) :
+        return np.log(x)
+    def backward(self, gy) :
+        return gy * (1 / self.inputs[0])
+def log(x) :
+    func = Log()
+    return func(x)
+
 class MeanSquareError(Function) :
     def forward(self, x0, x1) :
         diff = x0 - x1
@@ -403,6 +414,7 @@ def linear(*input) :
 
 class GetItem(Function) :
     def __init__(self, slices) :
+        # slices不能是个Variable，对slices求导数也没意义
         self.slices = slices
     def forward(self, x) :
         return x[self.slices]
@@ -428,11 +440,7 @@ class Clip(Function) :
         self.x_min = x_min
         self.x_max = x_max
     def forward(self, x) :
-        if x < self.x_min :
-            return self.x_min
-        if x > self.x_max :
-            return self.x_max
-        return x
+        return np.clip(x, self.x_min, self.x_max)
     def backward(self, gy) :
         x = self.inputs[0]
         return gy * (x.data >= self.x_min) * (x.data <= self.x_max)
