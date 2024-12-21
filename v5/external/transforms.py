@@ -3,7 +3,7 @@ try:
     import Image
 except ImportError:
     from PIL import Image
-from utils import pair
+from external.utils import pair
 
 
 class Compose:

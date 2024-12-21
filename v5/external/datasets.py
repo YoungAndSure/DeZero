@@ -4,8 +4,8 @@ import tarfile
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-from utils import get_file, cache_dir
-from transforms import Compose, Flatten, ToFloat, Normalize
+from external.utils import get_file, cache_dir
+from external.transforms import Compose, Flatten, ToFloat, Normalize
 
 
 class Dataset:
