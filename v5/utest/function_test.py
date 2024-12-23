@@ -11,6 +11,7 @@ import math
 from dezero import *
 import dezero.layer as L
 import dezero.model as M
+import dezero.datasets as D
 
 class AddTest(unittest.TestCase) :
   def test_backward(self) :
@@ -366,5 +367,12 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.allclose(y.data, 1.38879332))
     y.backward()
     self.assertTrue(np.allclose(x.grad.data, [[-0.52497919,-0.47502081]]))
+
+  def test_spiral(self) :
+    dataset = D.Spiral()
+    train, label = dataset[0]
+    self.assertTrue(np.allclose(train, [-0.13981389, -0.00721657]))
+    self.assertEqual(label, 1)
+    self.assertEqual(len(dataset), 300)
 
 unittest.main()
