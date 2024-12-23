@@ -374,5 +374,17 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.allclose(train, [-0.13981389, -0.00721657]))
     self.assertEqual(label, 1)
     self.assertEqual(len(dataset), 300)
+  
+  def test_dataset_transforms(self) :
+    def f(x) :
+      return x / 2
+    def lf(x) :
+      return x * 2
+
+    dataset = D.Spiral(transforms=f, label_tansforms=lf)
+    train, label = dataset[0]
+    self.assertTrue(np.allclose(train, [-0.13981389 / 2, -0.00721657 / 2]))
+    self.assertEqual(label, 1 * 2)
+    self.assertEqual(len(dataset), 300)
 
 unittest.main()
