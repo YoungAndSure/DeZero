@@ -3,6 +3,7 @@ import contextlib
 class Config :
   # 是否开启反向传播
   enable_backward = True
+  close_random = False
 
 @contextlib.contextmanager
 def using_config(key, value) :

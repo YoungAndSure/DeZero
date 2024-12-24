@@ -227,7 +227,14 @@ class Div(Function) :
         return x0 / x1
     def backward(self, gy) :
         x0, x1 = self.inputs
-        return (gy / x1, -1 * (x0 * gy) / (x1 * x1))
+        gx0 = gy / x1
+        gx1 = -1 * (x0 * gy) / (x1 * x1)
+        # NOTE:惊天大bug，找了一周才发现这里没有广播
+        # 通过在Varibale.backwards()中逐层打印grad对比得出
+        if x0.shape != x1.shape:  # for broadcast
+            gx0 = sum_to(gx0, x0.shape)
+            gx1 = sum_to(gx1, x1.shape)
+        return gx0, gx1
 def div(*inputs) :
     func = Div()
     return func(*inputs)

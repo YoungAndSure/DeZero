@@ -1,4 +1,5 @@
 import dezero.core as Core
+from dezero.config import *
 import numpy as np
 import weakref
 
@@ -54,7 +55,10 @@ class Linear(Layer) :
             self._init_W()
 
     def _init_W(self) :
-        W_data = np.random.randn(self.I, self.O).astype(self.dtype) / np.sqrt(1 / self.I)
+        if Config.close_random :
+            W_data = np.ones((self.I, self.O)).astype(self.dtype) / np.sqrt(1 / self.I)
+        else :
+            W_data = np.random.randn(self.I, self.O).astype(self.dtype) / np.sqrt(1 / self.I)
         self.W = Parameter(W_data, name='W')
         if self.has_bias :
             self.b = Parameter(np.zeros(self.O, dtype=self.dtype), name='b')

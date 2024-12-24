@@ -39,10 +39,8 @@ for epoch in range(max_epoch) :
     predict_y = model(batch_x)
     loss = C.softmax_cross_entropy_simple(predict_y, batch_t)
     model.cleargrad()
-    loss.backward()
+    loss.backward(retain_grad=True)
     optimizer.update()
 
     loss_sum += float(loss.data) * len(batch_t)
-    print("epoch:{}, iter:{}, loss:{}".format(epoch, j, loss_sum))
-
-print("loss={}".format(loss_sum/data_size))
+  print('epoch %d, loss %.2f' % (epoch + 1, loss_sum / data_size))
