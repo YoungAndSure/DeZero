@@ -231,6 +231,8 @@ class Div(Function) :
         gx1 = -1 * (x0 * gy) / (x1 * x1)
         # NOTE:惊天大bug，找了一周才发现这里没有广播
         # 通过在Varibale.backwards()中逐层打印grad对比得出
+        # 除法时候输入可能是一个数除以多维数，或者多维数除以一个数，输出都是多维数，
+        # 在对一个数求梯度时需要做sum_to保持形状一致
         if x0.shape != x1.shape:  # for broadcast
             gx0 = sum_to(gx0, x0.shape)
             gx1 = sum_to(gx1, x1.shape)
