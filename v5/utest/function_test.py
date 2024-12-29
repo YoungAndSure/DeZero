@@ -391,6 +391,6 @@ class AddTest(unittest.TestCase) :
     y = np.array([[0.2, 0.8, 0], [0.1, 0.9, 0], [0.8, 0.1, 0.1]])
     t = np.array([1, 2, 0])
     acc = accuracy(y, t)
-    self.assertEqual(np.allclose(acc.data, 0.66666))
+    self.assertTrue(np.allclose(acc.data, 0.66666))
 
 unittest.main()

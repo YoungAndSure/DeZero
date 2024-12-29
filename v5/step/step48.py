@@ -42,5 +42,7 @@ for epoch in range(max_epoch) :
     loss.backward(retain_grad=True)
     optimizer.update()
 
+    # 为什么这里要*len(batch_t)
+    # 因为交叉熵误差求了多个数据的合之后除以 N 得出平均值，所以这里要 *N
     loss_sum += float(loss.data) * len(batch_t)
   print('epoch %d, loss %.2f' % (epoch + 1, loss_sum / data_size))
