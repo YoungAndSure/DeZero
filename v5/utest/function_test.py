@@ -387,4 +387,10 @@ class AddTest(unittest.TestCase) :
     self.assertEqual(label, 1 * 2)
     self.assertEqual(len(dataset), 300)
 
+  def test_accuracy(self) :
+    y = np.array([[0.2, 0.8, 0], [0.1, 0.9, 0], [0.8, 0.1, 0.1]])
+    t = np.array([1, 2, 0])
+    acc = accuracy(y, t)
+    self.assertEqual(np.allclose(acc.data, 0.66666))
+
 unittest.main()
