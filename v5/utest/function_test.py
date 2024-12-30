@@ -325,14 +325,14 @@ class AddTest(unittest.TestCase) :
     y = softmax1d(x)
     self.assertTrue(np.allclose(y.data, [0.30060961, 0.33222499, 0.3671654]))
     y.backward()
-    self.assertTrue(np.allclose(x.grad.data, [0.21024347, 0.22185155, 0.23235497]))
+    self.assertTrue(np.allclose(x.grad.data, [0, 0, 0]))
 
   def test_softmax(self) :
     x = Variable(np.array([[-0.615, -0.427, 0.317],[-0.763, -0.249, 0.185],[-0.520, -0.962, 0.578],[-0.942, -0.503, 0.175]]))
     y = softmax(x)
     self.assertTrue(np.allclose(y.data, [[0.210, 0.254, 0.535],[0.190, 0.318, 0.491],[0.215, 0.138, 0.646],[0.178, 0.276, 0.545]], atol=0.001))
     y.backward()
-    self.assertTrue(np.allclose(x.grad.data, [[0.16629697,0.18961284,0.24877131],[0.15413868,0.21699148,0.24992426],[0.16904543,0.11931512,0.22867559],[0.14654381,0.20011686,0.24797577]]))
+    self.assertTrue(np.allclose(x.grad.data, [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]))
 
   def test_clip(self) :
     x = Variable(np.array(10.0))
@@ -366,7 +366,7 @@ class AddTest(unittest.TestCase) :
     y = softmax_cross_entropy_simple(x, t)
     self.assertTrue(np.allclose(y.data, 1.38879332))
     y.backward()
-    self.assertTrue(np.allclose(x.grad.data, [[-0.52497919,-0.47502081]]))
+    self.assertTrue(np.allclose(x.grad.data, [[-0.04995837, 0.04995837]]))
 
   def test_spiral(self) :
     dataset = D.Spiral()
