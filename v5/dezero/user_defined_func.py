@@ -63,6 +63,7 @@ def softmax1d(x) :
 
 def softmax(x, axis=1) :
   x = as_variable(x)
+  # NOTE: 这里很容易溢出，输入的x稍微大一点，y_sum就inf了，进而导致y / y_sum是nan
   y = exp(x)
   y_sum = sum(y, axis=axis, keepdims=True)
   return y / y_sum
