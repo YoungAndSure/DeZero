@@ -56,9 +56,11 @@ class Linear(Layer) :
 
     def _init_W(self) :
         if Config.close_random :
-            W_data = np.ones((self.I, self.O)).astype(self.dtype) / np.sqrt(1 / self.I)
+            W_data = np.zeros((self.I, self.O)).astype(self.dtype) * np.sqrt(1 / self.I)
         else :
-            W_data = np.random.randn(self.I, self.O).astype(self.dtype) / np.sqrt(1 / self.I)
+            # NOTE:惊天大BUG之二，也是查了很久，最后通过和官方版本打印对比找到。发现这里关掉随机后两边输出一致，确定问题就出在这一行。
+            # 原版是 * np.sqrt，我误以为是类似“归一化”的除操作。具体为什么这么初始化需要看看论文。
+            W_data = np.random.randn(self.I, self.O).astype(self.dtype) * np.sqrt(1 / self.I)
         self.W = Parameter(W_data, name='W')
         if self.has_bias :
             self.b = Parameter(np.zeros(self.O, dtype=self.dtype), name='b')
