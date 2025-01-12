@@ -12,6 +12,8 @@ import dezero.model as M
 import dezero.user_defined_func as U
 import external.datasets as E
 from dezero.config import *
+import matplotlib
+import matplotlib.pyplot as plt
 
 train_set = E.MNIST()
 test_set = E.MNIST(train = False)
@@ -47,6 +49,14 @@ with predict() :
     sum_acc = 0
     for batch_x, batch_t in test_loader :
         predict_y = model(batch_x)
+
+        for i in range(len(batch_x)) :
+            x = batch_x[i]
+            plt.imshow(x.reshape(28, 28), cmap='gray')
+            plt.axis('off')
+            plt.title('label:{}'.format(predict_y[i]))
+            plt.show()
+
         acc = U.accuracy(predict_y, batch_t)
         loss = U.softmax_cross_entropy_simple(predict_y, batch_t)
         sum_loss += loss.data * len(batch_x)
