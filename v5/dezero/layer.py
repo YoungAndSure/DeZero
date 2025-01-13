@@ -2,12 +2,14 @@ import dezero.core as Core
 from dezero.config import *
 import numpy as np
 import weakref
+import os
 
 class Parameter(Core.Variable) :
     pass
 
 class Layer :
     def __init__(self) :
+        # 保存所有Parammeter和Layer的名字，__dict__中保存了所有类型成员的参数名和值
         self._params = set()
     
     def __setattr__(self, name, value) :
@@ -43,13 +45,53 @@ class Layer :
         for param in self.params() :
             param.cleargrad()
 
+    def _flatten_params(self, params_dict, params_key="") :
+        for name in self._params :
+            obj = self.__dict__[name]
+            key = params_key + '/' + name if params_key != "" else name
+            if isinstance(obj, Layer) :
+                obj._flatten_params(params_dict, key)
+            else :
+                params_dict[key] = obj
+
+    def save_weights(self, path) :
+        params_dict = {}
+        self._flatten_params(params_dict)
+        array_dict = {}
+        for k,v in params_dict.items() :
+            if v is None :
+                continue
+            array_dict[k] = v.data
+        try :
+            np.savez_compressed(path, **array_dict)
+            print("dump params to {} success".format(path))
+        except(Exception, KeyboardInterrupt) as e :
+            if os.path.exists(path) :
+                os.remove(path)
+            raise
+
+    def load_weights(self, path) :
+        if os.path.exists(path) :
+            npz = np.load(path)
+            params_dict = {}
+            self._flatten_params(params_dict)
+            for key,param in params_dict.items() :
+                param.data = npz[key]
+            print("load params from {} success".format(path))
+        else :
+            raise
+
 class Linear(Layer) :
     def __init__(self, out_size, has_bias=True, dtype=np.float32, in_size=None) :
         super().__init__()
         self.I = in_size
         self.O = out_size
-        self.W = None
+        self.W = Parameter(None, name='W')
         self.has_bias = has_bias
+        if self.has_bias :
+            self.b = Parameter(None, name='b')
+        else :
+            self.b = None
         self.dtype = dtype
         if self.I != None :
             self._init_W()
@@ -62,13 +104,9 @@ class Linear(Layer) :
             # 原版是 * np.sqrt，我误以为是类似“归一化”的除操作。具体为什么这么初始化需要看看论文。
             W_data = np.random.randn(self.I, self.O).astype(self.dtype) * np.sqrt(1 / self.I)
         self.W = Parameter(W_data, name='W')
-        if self.has_bias :
-            self.b = Parameter(np.zeros(self.O, dtype=self.dtype), name='b')
-        else :
-            self.b = None
 
     def forward(self, x) :
-        if self.W == None :
+        if self.W.data is None :
             self.I = x.shape[1]
             self._init_W()
         y = Core.linear(x, self.W, self.b)

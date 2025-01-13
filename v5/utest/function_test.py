@@ -197,6 +197,10 @@ class AddTest(unittest.TestCase) :
     layer = L.Linear(in_size = 1, out_size = 1, has_bias = True, dtype = np.float32)
     y0 = layer(x0)
     self.assertTrue(isinstance(y0, Variable))
+    params_dict = {}
+    layer._flatten_params(params_dict)
+    self.assertTrue('W' in params_dict and isinstance(params_dict['W'], L.Parameter))
+    self.assertTrue('b' in params_dict and isinstance(params_dict['b'], L.Parameter))
 
   def test_linear_layer2(self) :
     np.random.seed(0)
