@@ -406,4 +406,23 @@ class AddTest(unittest.TestCase) :
       y = dropout(x)
       self.assertTrue(np.array_equal(x.data, y.data))
 
+  def test_get_conv_outsize(self) :
+    H, W = 4, 4 # input_shape
+    KH, KW = 3, 3 # kernel_shape
+    SH, SW = 1, 1 # stride(垂直方向的步幅，水平方向的步幅)
+    PH, PW = 1, 1 # padding(垂直方向的填充，水平方向的填充)
+    OH = get_conv_outsize(H, KH, SH, PH)
+    OW = get_conv_outsize(W, KW, SW, PW)
+    self.assertEqual(OH, 4)
+    self.assertEqual(OW, 4)
+
+  def test_im2col(self) :
+    x = Variable(np.random.rand(1, 3, 7, 7))
+    y = im2col(x, kernel_size=5, stride=1, pad=0)
+    self.assertTrue(np.array_equal(y.shape, (9, 75)))
+    x = Variable(np.random.rand(10, 3, 7, 7))
+    y = im2col(x, kernel_size=5, stride=1, pad=0)
+    self.assertTrue(np.array_equal(y.shape, (90, 75)))
+    y.backward()
+
 unittest.main()
