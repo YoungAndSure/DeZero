@@ -6,6 +6,8 @@ import dezero.util
 
 class Variable :
     def __init__(self, data, name=None) :
+        # NOTE:如果传入的data是None，直接就没有data这个成员了，也就打印不出
+        # 这个问题出现在Parameter未初始化W却要打印时
         if (data is not None) :
             if (not isinstance(data, numpy.ndarray)) :
                 raise TypeError('{} is not supported'.format(type(data)))
