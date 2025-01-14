@@ -12,6 +12,8 @@ class Variable :
             if (not isinstance(data, numpy.ndarray)) :
                 raise TypeError('{} is not supported'.format(type(data)))
             self.data = data
+        else :
+            self.data = None
         self.grad = None
         self.creator = None
         self.generation = 0
