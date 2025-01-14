@@ -88,3 +88,17 @@ def accuracy(y, t) :
   result = (pred == t.data)
   acc = result.mean()
   return Variable(as_array(acc))
+
+def dropout(x, dropout_ratio=0.5) :
+  x = as_variable(x)
+  if Config.train :
+    # rand是0，1均匀分布，randn是正态分布
+    # x.shape是个元组，传入rand需要解包
+    rx = np.random.rand(*x.shape)
+    mask = rx > dropout_ratio
+    scale = np.array(1 / (1 - dropout_ratio)).astype(x.dtype)
+    x *= mask
+    x *= scale
+    return x
+  else :
+    return x

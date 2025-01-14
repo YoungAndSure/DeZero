@@ -397,4 +397,13 @@ class AddTest(unittest.TestCase) :
     acc = accuracy(y, t)
     self.assertTrue(np.allclose(acc.data, 0.66666))
 
+  def test_dropout(self) :
+    x = Variable(np.ones(10))
+    y = dropout(x)
+    self.assertEqual(x.shape, y.shape)
+    with test_mode() :
+      x = Variable(np.ones(10))
+      y = dropout(x)
+      self.assertTrue(np.array_equal(x.data, y.data))
+
 unittest.main()
