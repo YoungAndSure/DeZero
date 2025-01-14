@@ -88,11 +88,11 @@ class Linear(Layer) :
         self.O = out_size
         self.W = Parameter(None, name='W')
         self.has_bias = has_bias
+        self.dtype = dtype
         if self.has_bias :
-            self.b = Parameter(None, name='b')
+            self.b = Parameter(np.zeros(self.O, dtype=self.dtype), name='b')
         else :
             self.b = None
-        self.dtype = dtype
         if self.I != None :
             self._init_W()
 
