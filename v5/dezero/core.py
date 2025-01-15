@@ -85,8 +85,8 @@ class Variable :
             shape = shape[0]
         return reshape(self, shape)
     
-    def transpose(self) :
-        return transpose(self)
+    def transpose(self, *axis) :
+        return transpose(self, axis)
     @property
     def T(self) :
         return transpose(self)
@@ -300,6 +300,8 @@ def reshape(x, shape) :
     return func(x)
 
 class Transpose(Function) :
+    def __init__(self, axis) :
+        self.input_axis = axis
     def forward(self, x) :
         # 不用特殊处理一维数据, 一维实际就是不能转置的
         #if x.ndim == 1 :
@@ -307,14 +309,18 @@ class Transpose(Function) :
         #elif x.shape[-1] == 1 :
         #    y = np.transpose(x).ravel()
         #else :
-        y = np.transpose(x)
+        y = np.transpose(x) if (self.input_axis is None or len(self.input_axis) == 0) else np.transpose(x, self.input_axis)
         return y
         #return np.transpose(x) if x.ndim != 1 else np.transpose(x).reshape(-1, 1)
     def backward(self, gy):
         # gy的类型是 Variable , 反向传播需要建立图，也就是要调用 DeZero 的方法实现
-        return transpose(gy)
-def transpose(x) :
-    func = Transpose()
+        if self.input_axis is None :
+            return transpose(gy)
+        inv_axis = tuple(np.argsort([ax % len(self.input_axis) for ax in self.input_axis]))
+        gx = transpose(gy, inv_axis)
+        return gx
+def transpose(x, axis=None) :
+    func = Transpose(axis)
     return func(x)
 
 class Sum(Function) :
@@ -411,6 +417,7 @@ class Linear(Function) :
         # backward因为出入参是Variable类型，且需要建立反向传播的连接图，所以必须调用其他已经实现的Function
         t = np.dot(x, W)
         if b is None :
+            self.b_shape = None
             return t
         self.b_shape = b.shape
         y = t + b
@@ -418,7 +425,7 @@ class Linear(Function) :
     def backward(self, gy) :
         # 入参是3个，返回梯度也是3个，一一对应
         gW = matmul(self.inputs[0].T, gy)
-        gb = sum_to(gy, self.b_shape)
+        gb = sum_to(gy, self.b_shape) if self.b_shape is not None else None
         gx = matmul(gy, self.inputs[1].T)
         return (gx, gW, gb)
 def linear(*input) :

@@ -425,4 +425,12 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.array_equal(y.shape, (90, 75)))
     y.backward()
 
+  def test_conv2d_simple(self) :
+    x = Variable(np.random.rand(10, 3, 7, 7))
+    W = Variable(np.random.rand(2, 3, 5, 5))
+    y = conv2d_simple(x, W)
+    self.assertTrue(np.array_equal(y.shape, (10, 2, 3, 3)))
+    y.backward()
+
+
 unittest.main()

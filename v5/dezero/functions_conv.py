@@ -104,3 +104,17 @@ class Col2im(Function):
       return gx
 def col2im(x, input_shape, kernel_size, stride=1, pad=0, to_matrix=True):
     return Col2im(input_shape, kernel_size, stride, pad, to_matrix)(x)
+
+def conv2d_simple(x, Kernel, b=None, stride=1, pad=0) :
+  N, C, H, W = x.shape
+  OC, C, KH, KW = Kernel.shape
+  SH, SW = pair(stride)
+  PH, PW = pair(pad)
+  OH = get_conv_outsize(H, KH, SH, PH)
+  OW = get_conv_outsize(W, KW, SW, PW)
+
+  col = im2col(x, (KH, KW), (SH, SW), (PH, PW))
+  w = Kernel.reshape(OC, -1).transpose()
+  t = linear(col, w, b)
+  y = t.reshape(N, OH, OW, OC).transpose(0, 3, 1, 2)
+  return y
