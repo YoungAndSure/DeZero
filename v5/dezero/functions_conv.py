@@ -152,3 +152,17 @@ class Conv2d(Layer) :
 
       y = conv2d_simple(x, self.W, self.b, self.stride, self.pad)
       return y
+
+def pooling_simple(x, kernel_size, stride=1, pad=0) :
+  N, C, H, W = x.shape
+  KH, KW = pair(kernel_size)
+  SH, SW = pair(stride)
+  PH, PW = pair(pad)
+  OH = get_conv_outsize(H, KH, SH, PH)
+  OW = get_conv_outsize(W, KW, SW, PW)
+
+  col = im2col(x, (KH, KW), (SH, SW), (PH, PW))
+  col = col.reshape(-1, KH * KW)
+  y = col.max(axis=1)
+  y = col.reshape(N, OH, OW, C).transpose([0, 3, 1, 2])
+  return y
