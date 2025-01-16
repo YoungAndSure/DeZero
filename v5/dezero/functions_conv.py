@@ -6,6 +6,7 @@ if '__file__' in globals() :
 
 import math
 from dezero.core import *
+from dezero.layer import *
 
 def get_conv_outsize(input_size, kernel_size, stride, pad) :
   return ((input_size + pad * 2) - kernel_size) // stride + 1
@@ -118,3 +119,36 @@ def conv2d_simple(x, Kernel, b=None, stride=1, pad=0) :
   t = linear(col, w, b)
   y = t.reshape(N, OH, OW, OC).transpose(0, 3, 1, 2)
   return y
+
+class Conv2d(Layer) :
+    def __init__(self, out_channel, kernel_size, stride=1, pad=0, no_bias=True, dtype=np.float32, in_channel=None) :
+      super.__init__()
+      self.out_channel = out_channel
+      self.kernel_size = kernel_size
+      self.stride = stride
+      self.pad = pad
+      self.in_channel = in_channel
+      self.no_bias = no_bias
+      self.dtype = dtype
+      self.W = Parameter(None, 'W')
+      if self.in_channel is not None :
+         self.init_W()
+
+      if self.no_bias :
+         self.b = None
+      else :
+         self.b = Parameter(np.zeros(out_channel).astype(dtype), 'b')
+    
+    def init_W(self) :
+      KH, KW = pair(self.kernel_size)
+      C, OC = self.in_channel, self.out_channel
+      scale = np.sqrt(1 / (C * KH * KW))
+      self.W.data = np.random.randn(OC, C, KH, KW).astype(self.dtype) * scale
+    
+    def forward(self, x) :
+      if self.W.data is None :
+        self.in_channel = x.shape[0]
+        self.init_W()
+
+      y = conv2d_simple(x, self.W, self.b, self.stride, self.pad)
+      return y
