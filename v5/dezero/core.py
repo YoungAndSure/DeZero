@@ -122,6 +122,8 @@ def setup_variable() :
 
   Variable.__getitem__ = get_item
 
+  Variable.max = vmax
+
 
 class Function :
     def __call__(self, *inputs) :
@@ -466,6 +468,40 @@ class Clip(Function) :
         return gy * (x.data >= self.x_min) * (x.data <= self.x_max)
 def clip(x, x_min, x_max) :
     func = Clip(x_min, x_max)
+    return func(x)
+
+def max_backward_shape(x, axis) :
+    if axis is None :
+        axis = range(x.ndim)
+    elif isinstance(axis, int) :
+        axis = (axis,)
+
+    # axis这个方向被max计算过之后shape变成了1，这里是计算了x被axis方向max之后的shape
+    # 按说那不就是y的shape吗？
+    shape = [ s if ax not in axis else 1 for ax,s in enumerate(x.shape)]
+    return shape
+
+class Max(Function) :
+    def __init__(self, axis, keepndims=True) :
+        self.axis = axis
+        self.keepndims = keepndims
+    def forward(self, x) :
+        y = np.max(x, axis=self.axis, keepdims=self.keepndims)
+        return y
+    def backward(self, gy) :
+        x = self.inputs[0]
+        y = self.outputs()
+
+        # NOTE:这一步暂时没发现有什么用，理论上这个shape和y的shape是一样的，没必要reshape
+        shape = max_backward_shape(x, self.axis)
+        gy = gy.reshape(shape)
+        y = reshape(y, shape)
+        # 这里==用的是np提供的广播功能
+        cond = (x.data == y.data)
+        gy = broadcast_to(gy, cond.shape)
+        return gy * cond
+def vmax(x, axis=None, keepndims=True) :
+    func = Max(axis, keepndims)
     return func(x)
 
 class Utils :

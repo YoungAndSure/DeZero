@@ -431,6 +431,26 @@ class AddTest(unittest.TestCase) :
     y = conv2d_simple(x, W)
     self.assertTrue(np.array_equal(y.shape, (10, 2, 3, 3)))
     y.backward()
+  
+  def test_max(self) :
+    x = Variable(np.array([1,2,3]))
+    y = x.max()
+    self.assertTrue(np.array_equal(y.data, [3]))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [0, 0, 1]))
+
+    x = Variable(np.array([[1,2,3],[4,5,6]]))
+    y = x.max(axis=1)
+    self.assertTrue(np.array_equal(y.data, [[3],[6]]))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [[0,0,1], [0,0,1]]))
+
+'''
+  def test_pooling_simple(self) :
+    x = Variable(np.random.rand(10, 3, 7, 7))
+    y = pooling_simple(x, kernel_size=5, stride=1, pad=0)
+    self.assertTrue(np.array_equal(y.shape, (90, 3)))
+'''
 
 
 unittest.main()
