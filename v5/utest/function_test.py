@@ -445,12 +445,10 @@ class AddTest(unittest.TestCase) :
     y.backward()
     self.assertTrue(np.array_equal(x.grad.data, [[0,0,1], [0,0,1]]))
 
-'''
   def test_pooling_simple(self) :
     x = Variable(np.random.rand(10, 3, 7, 7))
     y = pooling_simple(x, kernel_size=5, stride=1, pad=0)
-    self.assertTrue(np.array_equal(y.shape, (90, 3)))
-'''
+    self.assertTrue(np.array_equal(y.shape, (10, 3, 3, 3)))
 
 
 unittest.main()
