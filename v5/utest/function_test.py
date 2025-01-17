@@ -450,5 +450,13 @@ class AddTest(unittest.TestCase) :
     y = pooling_simple(x, kernel_size=5, stride=1, pad=0)
     self.assertTrue(np.array_equal(y.shape, (10, 3, 3, 3)))
 
+  def test_conv2d_layer(self) :
+    x = Variable(np.random.rand(10, 3, 7, 7))
+    conv2d = Conv2d(out_channel=3, kernel_size=5, stride=1, pad=0)
+    y = conv2d(x)
+    self.assertTrue(np.array_equal(y.shape, (10, 3, 3, 3)))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.shape, (10, 3, 7, 7)))
+
 
 unittest.main()

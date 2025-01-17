@@ -122,7 +122,7 @@ def conv2d_simple(x, Kernel, b=None, stride=1, pad=0) :
 
 class Conv2d(Layer) :
     def __init__(self, out_channel, kernel_size, stride=1, pad=0, no_bias=True, dtype=np.float32, in_channel=None) :
-      super.__init__()
+      super().__init__()
       self.out_channel = out_channel
       self.kernel_size = kernel_size
       self.stride = stride
@@ -147,7 +147,7 @@ class Conv2d(Layer) :
     
     def forward(self, x) :
       if self.W.data is None :
-        self.in_channel = x.shape[0]
+        self.in_channel = x.shape[1]
         self.init_W()
 
       y = conv2d_simple(x, self.W, self.b, self.stride, self.pad)
