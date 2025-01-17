@@ -504,6 +504,19 @@ def vmax(x, axis=None, keepndims=True) :
     func = Max(axis, keepndims)
     return func(x)
 
+class ReLU(Function) :
+    def forward(self, x) :
+        y = np.maximum(x, 0)
+        return y
+    def backward(self, gy):
+        x = self.inputs[0]
+        mask = x.data > 0
+        gx = gy * mask
+        return gx
+def relu(x) :
+    func = ReLU()
+    return func(x)
+
 class Utils :
     @staticmethod
     def sum_to(x, shape) :

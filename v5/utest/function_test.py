@@ -458,5 +458,11 @@ class AddTest(unittest.TestCase) :
     y.backward()
     self.assertTrue(np.array_equal(x.grad.shape, (10, 3, 7, 7)))
 
+  def test_relu(self) :
+    x = Variable(np.array([-1.0, 1.0]))
+    y = relu(x)
+    self.assertTrue(np.array_equal(y.data, [0, 1.0]))
+    y.backward()
+    self.assertTrue(np.array_equal(x.grad.data, [0, 1.0]))
 
 unittest.main()
