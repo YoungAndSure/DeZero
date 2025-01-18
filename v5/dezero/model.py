@@ -1,5 +1,6 @@
 import dezero.layer as L
 from dezero.user_defined_func import *
+from dezero.functions_conv import *
 import dezero.util as util
 
 class Model(L.Layer) :
@@ -27,3 +28,46 @@ class MLP(Model) :
     output_layer = self.layers[-1]
     y = output_layer(x)
     return y
+
+class VGG16(Model):
+  def __init__(self):
+    super().__init__()
+    self.conv1_1 = L.Conv2d(64, kernel_size=3, stride=1, pad=1)
+    self.conv1_2 = L.Conv2d(64, kernel_size=3, stride=1, pad=1)
+    self.conv2_1 = L.Conv2d(128, kernel_size=3, stride=1, pad=1)
+    self.conv2_2 = L.Conv2d(128, kernel_size=3, stride=1, pad=1)
+    self.conv3_1 = L.Conv2d(256, kernel_size=3, stride=1, pad=1)
+    self.conv3_2 = L.Conv2d(256, kernel_size=3, stride=1, pad=1)
+    self.conv3_3 = L.Conv2d(256, kernel_size=3, stride=1, pad=1)
+    self.conv4_1 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.conv4_2 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.conv4_3 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.conv5_1 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.conv5_2 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.conv5_3 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.fc6 = L.Linear(4096)
+    self.fc7 = L.Linear(4096)
+    self.fc8 = L.Linear(1000)
+  def forward(self, x):
+    x = relu(self.conv1_1(x))
+    x = relu(self.conv1_2(x))
+    x = pooling_simple(x, 2, 2)
+    x = relu(self.conv2_1(x))
+    x = relu(self.conv2_2(x))
+    x = pooling_simple(x, 2, 2)
+    x = relu(self.conv3_1(x))
+    x = relu(self.conv3_2(x))
+    x = relu(self.conv3_3(x))
+    x = pooling_simple(x, 2, 2)
+    x = relu(self.conv4_1(x))
+    x = relu(self.conv4_2(x))
+    x = relu(self.conv4_3(x))
+    x = pooling_simple(x, 2, 2)
+    x = relu(self.conv5_1(x))
+    x = relu(self.conv5_2(x))
+    x = relu(self.conv5_3(x))
+    x = pooling_simple(x, 2, 2)
+    x = reshape(x, (x.shape[0], -1))
+    x = dropout(relu(self.fc7(x)))
+    x = self.fc8(x)
+    return x
