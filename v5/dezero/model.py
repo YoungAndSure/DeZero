@@ -81,3 +81,17 @@ class VGG16(Model):
     x = dropout(relu(self.fc7(x)))
     x = self.fc8(x)
     return x
+  
+  @staticmethod
+  def preprocess(img, size=(224,224), dtype=np.float32) :
+    image = img.convert('RGB')
+    if size :
+      image = image.resize(size)
+    image = np.asarray(image, dtype)
+    # ::-1代表逆序操作，比如本来是'RGB',::-1之后是'BGR'
+    image = image[:,:,::-1]
+    # 这段不懂，可能是为了限制数据大小防止溢出？
+    image -= np.array([103.939, 116.779, 123.68], dtype=dtype)
+    # 把通道放前面了，VGG16里是这么实现的
+    image = image.transpose((2, 0, 1))
+    return image
