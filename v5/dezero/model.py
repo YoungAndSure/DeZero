@@ -77,6 +77,7 @@ class VGG16(Model):
     x = relu(self.conv5_3(x))
     x = pooling_simple(x, 2, 2)
     x = reshape(x, (x.shape[0], -1))
+    x = dropout(relu(self.fc6(x)))
     x = dropout(relu(self.fc7(x)))
     x = self.fc8(x)
     return x
