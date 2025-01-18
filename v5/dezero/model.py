@@ -1,7 +1,8 @@
 import dezero.layer as L
+import dezero.util as util
 from dezero.user_defined_func import *
 from dezero.functions_conv import *
-import dezero.util as util
+from external.utils import *
 
 class Model(L.Layer) :
   def plot(self, *input, file_name='model.png') :
@@ -30,24 +31,32 @@ class MLP(Model) :
     return y
 
 class VGG16(Model):
-  def __init__(self):
+  WEIGHTS_PATH = 'https://github.com/koki0702/dezero-models/' \
+                 'releases/download/v0.1/vgg16.npz'
+
+  def __init__(self, pretrained=False):
     super().__init__()
-    self.conv1_1 = L.Conv2d(64, kernel_size=3, stride=1, pad=1)
-    self.conv1_2 = L.Conv2d(64, kernel_size=3, stride=1, pad=1)
-    self.conv2_1 = L.Conv2d(128, kernel_size=3, stride=1, pad=1)
-    self.conv2_2 = L.Conv2d(128, kernel_size=3, stride=1, pad=1)
-    self.conv3_1 = L.Conv2d(256, kernel_size=3, stride=1, pad=1)
-    self.conv3_2 = L.Conv2d(256, kernel_size=3, stride=1, pad=1)
-    self.conv3_3 = L.Conv2d(256, kernel_size=3, stride=1, pad=1)
-    self.conv4_1 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
-    self.conv4_2 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
-    self.conv4_3 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
-    self.conv5_1 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
-    self.conv5_2 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
-    self.conv5_3 = L.Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.conv1_1 = Conv2d(64, kernel_size=3, stride=1, pad=1)
+    self.conv1_2 = Conv2d(64, kernel_size=3, stride=1, pad=1)
+    self.conv2_1 = Conv2d(128, kernel_size=3, stride=1, pad=1)
+    self.conv2_2 = Conv2d(128, kernel_size=3, stride=1, pad=1)
+    self.conv3_1 = Conv2d(256, kernel_size=3, stride=1, pad=1)
+    self.conv3_2 = Conv2d(256, kernel_size=3, stride=1, pad=1)
+    self.conv3_3 = Conv2d(256, kernel_size=3, stride=1, pad=1)
+    self.conv4_1 = Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.conv4_2 = Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.conv4_3 = Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.conv5_1 = Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.conv5_2 = Conv2d(512, kernel_size=3, stride=1, pad=1)
+    self.conv5_3 = Conv2d(512, kernel_size=3, stride=1, pad=1)
     self.fc6 = L.Linear(4096)
     self.fc7 = L.Linear(4096)
     self.fc8 = L.Linear(1000)
+
+    if pretrained :
+      weight_file = get_file(VGG16.WEIGHTS_PATH)
+      self.load_weights(weight_file)
+
   def forward(self, x):
     x = relu(self.conv1_1(x))
     x = relu(self.conv1_2(x))

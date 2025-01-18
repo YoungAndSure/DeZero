@@ -465,4 +465,10 @@ class AddTest(unittest.TestCase) :
     y.backward()
     self.assertTrue(np.array_equal(x.grad.data, [0, 1.0]))
 
+  def test_vgg16_model(self) :
+    model = M.VGG16(pretrained=True)
+    x = Variable(np.random.rand(10, 3, 7, 7))
+    y = model(x)
+    print(y.shape)
+
 unittest.main()
