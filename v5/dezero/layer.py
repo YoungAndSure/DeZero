@@ -111,3 +111,22 @@ class Linear(Layer) :
             self._init_W()
         y = Core.linear(x, self.W, self.b)
         return y
+
+class RNN(Layer) :
+    def __init__(self, hidden_size, in_size=None) :
+        super().__init__()
+        self.hidden_size = hidden_size
+        self.x2h = Linear(hidden_size, in_size = in_size)
+        self.h2h = Linear(hidden_size, in_size = hidden_size, has_bias=False)
+        self.h = None
+    
+    def reset_status(self) :
+        self.h = None
+    
+    def forward(self, x) :
+        if self.h is None :
+            y = Core.tanh(self.x2h(x))
+        else :
+            y = Core.tanh(self.x2h(x) + self.h2h(self.h))
+        self.h = y
+        return y
