@@ -95,3 +95,17 @@ class VGG16(Model):
     # 把通道放前面了，VGG16里是这么实现的
     image = image.transpose((2, 0, 1))
     return image
+
+class SimpleRNN(Model) :
+  def __init__(self, hidden_size, out_size) :
+    super().__init__()
+    self.rnn = RNN(hidden_size=hidden_size)
+    self.fc = Linear(out_size=out_size)
+
+  def reset_status(self) :
+    self.rnn.reset_status()
+
+  def forward(self, x) :
+    y = self.rnn(x)
+    y = self.fc(y)
+    return y
