@@ -74,6 +74,21 @@ class Variable :
                         add_func(input.creator)
                 if retain_grad == False :
                     func.outputs().grad = None
+    
+    def unchain(self) :
+        self.creator = None
+    
+    def unchain_backward(self) :
+        if self.creator is not None :
+            funcs = [self.creator]
+            # TODO: why not?
+            # self.unchain()
+            while funcs :
+                f = funcs.pop()
+                for input in f.inputs :
+                    if input.creator is not None :
+                        funcs.append(input.creator)
+                        input.unchain()
 
     def cleargrad(self) :
         self.grad = None

@@ -484,5 +484,18 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.array_equal(rnn.h.shape, (1,10)))
     rnn.reset_status()
     self.assertEqual(rnn.h, None)
+  
+  def test_unchain(self) :
+    a = Variable(np.array(1.0))
+    b = Variable(np.array(2.0))
+    c = a + b
+    d = c + 3.0
+    self.assertTrue(d.creator is not None)
+    d.unchain_backward()
+    self.assertTrue(d.creator is not None)
+    self.assertTrue(a.creator is None)
+    self.assertTrue(b.creator is None)
+    self.assertTrue(c.creator is None)
+
 
 unittest.main()
