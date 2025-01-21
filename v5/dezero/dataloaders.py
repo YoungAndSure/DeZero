@@ -38,3 +38,22 @@ class DataLoader :
 
   def next(self) :
     return self.__next__()
+
+class SeqDataLoader(DataLoader) :
+  def __init__(self, dataset, batch_size, shuffle=False) :
+    super().__init__(dataset, batch_size, shuffle)
+
+  def __next__(self) :
+    if (self.iterate_count >= self.max_iter) :
+      self.reset()
+      raise StopIteration
+
+    jump = self.data_size // self.batch_size
+    batch_index = [(i * jump + self.iterate_count) % self.data_size for i in range(self.batch_size)] 
+    batch = [self.data[i] for i in batch_index]
+
+    x = np.array([example[0] for example in batch])
+    t = np.array([example[1] for example in batch])
+
+    self.iterate_count += 1
+    return (x, t)

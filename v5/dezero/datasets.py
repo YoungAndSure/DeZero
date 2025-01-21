@@ -49,3 +49,13 @@ class ImageNet(Dataset) :
       # 这个文件里是个字典，这里用eval直接把字典转成了对象
       labels = eval(f.read())
     return labels
+
+class SeqDataSet(Dataset) :
+  def __init__(self, max_len=100, train = True, transforms=None, label_tansforms=None) :
+    self.max_len = max_len
+    super().__init__(train=train, transforms=transforms, label_tansforms=label_tansforms)
+
+  def prepare(self):
+    data = range(0, self.max_len)
+    self.data = data[0:-1]
+    self.label = data[1:]

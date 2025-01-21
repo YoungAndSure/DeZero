@@ -12,6 +12,7 @@ from dezero import *
 import dezero.layer as L
 import dezero.model as M
 import dezero.datasets as D
+import dezero.dataloaders as DL
 
 class AddTest(unittest.TestCase) :
   def test_backward(self) :
@@ -497,5 +498,12 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(b.creator is None)
     self.assertTrue(c.creator is None)
 
+  def test_seq_dataloader(self) :
+    dataset = D.SeqDataSet(max_len=100)
+    data_loader = DL.SeqDataLoader(dataset, batch_size=10)
+    for x, t in data_loader :
+      self.assertTrue(np.array_equal(x, [0,9,18,27,36,45,54,63,72,81]))
+      self.assertTrue(np.array_equal(t, [1,10,19,28,37,46,55,64,73,82]))
+      break
 
 unittest.main()
