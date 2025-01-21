@@ -45,6 +45,7 @@ for i in range(max_epoch) :
     if count % bptt_length == 0 or count == seq_len :
       model.cleargrad()
       loss.backward()
+      # TODO: unchain之后，图都连不起来了，还怎么predict?
       loss.unchain_backward()
       optimizer.update()
   avg_loss = loss.data.item() / count
@@ -52,6 +53,7 @@ for i in range(max_epoch) :
 
 xs = np.cos(np.linspace(0, np.pi * 4, 1000))
 y_list = []
+# TODO: 为什么要reset_status?试了下，不reset也没什么问题
 model.reset_status()
 with predict() :
   for x in xs :
