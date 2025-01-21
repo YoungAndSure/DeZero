@@ -49,3 +49,19 @@ for i in range(max_epoch) :
       optimizer.update()
   avg_loss = loss.data.item() / count
   print("epoch:{}, loss:{}".format(i, avg_loss))
+
+xs = np.cos(np.linspace(0, np.pi * 4, 1000))
+y_list = []
+model.reset_status()
+with predict() :
+  for x in xs :
+    x = np.array(x).reshape(1, 1)
+    y = model(x)
+    y_list.append(y.data.item())
+
+plt.plot(np.arange(len(xs)), xs, label='y=cos(x)')
+plt.plot(np.arange(len(xs)), y_list, label='predict')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.show()
