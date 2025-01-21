@@ -134,6 +134,7 @@ class RNN(Layer) :
 
 class LSTM(Layer) :
     def __init__(self, hidden_size, in_size=None) :
+        super().__init__()
         self.x2f = Linear(hidden_size) 
         self.x2i = Linear(hidden_size)
         self.x2o = Linear(hidden_size)
