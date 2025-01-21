@@ -1,4 +1,5 @@
 import dezero.core as Core
+import dezero.user_defined_func as UDF
 from dezero.config import *
 import numpy as np
 import weakref
@@ -130,3 +131,45 @@ class RNN(Layer) :
             y = Core.tanh(self.x2h(x) + self.h2h(self.h))
         self.h = y
         return y
+
+class LSTM(Layer) :
+    def __init__(self, hidden_size, in_size=None) :
+        self.x2f = Linear(hidden_size) 
+        self.x2i = Linear(hidden_size)
+        self.x2o = Linear(hidden_size)
+        self.x2u = Linear(hidden_size)
+
+        self.h2f = Linear(hidden_size, has_bias=False)
+        self.h2i = Linear(hidden_size, has_bias=False)
+        self.h2o = Linear(hidden_size, has_bias=False)
+        self.h2u = Linear(hidden_size, has_bias=False)
+
+        self.reset_status()
+    
+    def reset_status(self) :
+        self.c = None
+        self.h = None
+
+    def forward(self, x) :
+        f,i,o,u = None,None,None,None
+        if self.h is None :
+            f = UDF.sigmod_simple(self.x2f(x))
+            i = UDF.sigmod_simple(self.x2i(x))
+            o = UDF.sigmod_simple(self.x2o(x))
+            u = Core.tanh(self.x2u(x))
+        else :
+            f = UDF.sigmod_simple(self.x2f(x) + self.h2f(self.h))
+            i = UDF.sigmod_simple(self.x2i(x) + self.h2i(self.h))
+            o = UDF.sigmod_simple(self.x2o(x) + self.h2o(self.h))
+            u = Core.tanh(self.x2u(x) + self.h2u(self.h))
+        
+        if self.c is None :
+            c = i * u
+        else :
+            c = f * self.c + i * u
+        h = o * Core.tanh(c)
+
+        self.c = c
+        self.h = h
+
+        return h
