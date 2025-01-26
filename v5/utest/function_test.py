@@ -467,6 +467,11 @@ class AddTest(unittest.TestCase) :
     self.assertTrue(np.array_equal(x.grad.data, [0, 1.0]))
 
   def test_vgg16_model(self) :
+    import multiprocessing
+    cpu_count = multiprocessing.cpu_count()
+    if cpu_count <= 2 :
+      print("这么点核数跑不起来vgg16,加钱吧哥们儿")
+      return
     model = M.VGG16(pretrained=True)
     x = Variable(np.random.rand(1, 3, 224, 224))
     y = model(x)
